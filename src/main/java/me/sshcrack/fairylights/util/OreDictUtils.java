@@ -56,13 +56,9 @@ public final class OreDictUtils {
         for (final Dye dye : Dye.values()) {
             TagKey<Item> key = dye.getName();
 
-            //Registry.ITEM.stream().filter(e -> e);
-            List<RegistryKey<Item>> dyes = Registry.ITEM.getEntrySet().stream().filter(e -> e.getValue().compareTo(key.id()) == 0)
-                    .map(Map.Entry::getKey)
-                    .collect(Collectors.toList());
-
-            for (final Holder<Item> holder : Registry.ITEM) {
-                bob.put(dye.getColor(), new ItemStack(holder));
+            List<Item> dyes = Utils.getItemsWithTag(key);
+            for (final Item holder : dyes) {
+                bob.put(dye.getColor(), holder.getDefaultStack());
             }
         }
         return bob.build();

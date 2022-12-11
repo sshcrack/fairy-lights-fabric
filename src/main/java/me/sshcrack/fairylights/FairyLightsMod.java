@@ -9,6 +9,7 @@ public class FairyLightsMod implements ModInitializer {
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger("FairyLights");
+	public static final String ModID = "fairylights";
 
 	@Override
 	public void onInitialize() {

@@ -1,9 +1,9 @@
 package me.sshcrack.fairylights.util;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 public interface NBTSerializable {
-    CompoundTag serialize();
+    NbtCompound serialize();
 
-    void deserialize(CompoundTag compound);
+    void deserialize(NbtCompound compound);
 }
