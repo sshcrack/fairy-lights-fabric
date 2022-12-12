@@ -1,12 +1,12 @@
 package me.sshcrack.fairylights.client.gui.component;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import me.paulf.fairylights.client.gui.EditLetteredConnectionScreen;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.Component;
+import me.sshcrack.fairylights.client.gui.EditLetteredConnectionScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 
-public class ToggleButton extends Button {
+public class ToggleButton extends ButtonWidget {
     private final int u;
 
     private final int v;
@@ -15,7 +15,7 @@ public class ToggleButton extends Button {
 
     private boolean pressed;
 
-    public ToggleButton(final int x, final int y, final int u, final int v, final Component msg, final Button.OnPress pressable) {
+    public ToggleButton(final int x, final int y, final int u, final int v, final Text msg, final ButtonWidget.PressAction pressable) {
         super(x, y, 20, 20, msg, pressable);
         this.u = u;
         this.v = v;
@@ -42,12 +42,12 @@ public class ToggleButton extends Button {
     }
 
     @Override
-    public void renderButton(final PoseStack stack, final int mouseX, final int mouseY, final float delta) {
+    public void renderButton(final MatrixStack stack, final int mouseX, final int mouseY, final float delta) {
         if (this.visible) {
             RenderSystem.setShaderTexture(0, EditLetteredConnectionScreen.WIDGETS_TEXTURE);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             final int t;
-            if (this.isHovered) {
+            if (this.hovered) {
                 if (this.pressed) {
                     t = 2;
                 } else {
@@ -60,7 +60,7 @@ public class ToggleButton extends Button {
                     t = 0;
                 }
             }
-            this.blit(stack, this.x, this.y, this.u, this.v + this.height * t, this.width, this.height);
+            this.drawTexture(stack, this.x, this.y, this.u, this.v + this.height * t, this.width, this.height);
         }
     }
 }

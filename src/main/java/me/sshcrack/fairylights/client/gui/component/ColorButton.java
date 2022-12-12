@@ -3,7 +3,6 @@ package me.sshcrack.fairylights.client.gui.component;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.sshcrack.fairylights.client.gui.EditLetteredConnectionScreen;
 import me.sshcrack.fairylights.util.styledstring.StyledString;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -51,7 +50,7 @@ public final class ColorButton extends ButtonWidget {
         if (this.visible) {
             RenderSystem.setShaderTexture(0, EditLetteredConnectionScreen.WIDGETS_TEXTURE);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            this.drawTexture(stack, this.x, this.y, TEX_U, this.isHovered ? TEX_V + this.height : TEX_V, this.width, this.height);
+            this.drawTexture(stack, this.x, this.y, TEX_U, this.hovered ? TEX_V + this.height : TEX_V, this.width, this.height);
             if (this.displayColor != null) {
                 this.drawTexture(stack, this.x, this.y, TEX_U + this.width, TEX_V, this.width, this.height);
                 RenderSystem.setShaderColor(this.displayColorR, this.displayColorG, this.displayColorB, 1.0F);

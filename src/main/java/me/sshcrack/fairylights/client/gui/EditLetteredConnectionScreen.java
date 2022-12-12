@@ -9,6 +9,7 @@ import me.sshcrack.fairylights.util.styledstring.StyledString;
 import me.sshcrack.fairylights.util.styledstring.StylingPresence;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -44,6 +45,7 @@ public final class EditLetteredConnectionScreen<C extends Connection & Lettered>
 
     @Override
     public void init() {
+        assert this.client != null;
         this.client.keyboard.setRepeatEvents(true);
         final int pad = 4;
         final int buttonWidth = 150;
@@ -70,7 +72,7 @@ public final class EditLetteredConnectionScreen<C extends Connection & Lettered>
         this.textField.registerChangeListener(this::validateText);
         this.textField.setCharInputTransformer(this.connection.getInputTransformer());
         this.textField.setFocused(true);
-        this.addWidget(this.textField);
+        this.addDrawable(this.textField);
         this.paletteBtn.visible = false;
         final StylingPresence ss = this.connection.getSupportedStyling();
         this.colorBtn.visible = ss.hasColor();
@@ -87,6 +89,7 @@ public final class EditLetteredConnectionScreen<C extends Connection & Lettered>
 
     @Override
     public void removed() {
+        assert this.client != null;
         this.client.keyboard.setRepeatEvents(false);
     }
 
@@ -148,16 +151,16 @@ public final class EditLetteredConnectionScreen<C extends Connection & Lettered>
     }
 
     @Override
-    public void render(final PoseStack stack, final int mouseX, final int mouseY, final float delta) {
+    public void render(final MatrixStack stack, final int mouseX, final int mouseY, final float delta) {
         this.renderBackground(stack);
-        drawCenteredString(stack, this.font, Text.translatable("fairylights.editLetteredConnection"), this.width / 2, 20, 0xFFFFFF);
+        drawCenteredText(stack, this.textRenderer, Text.translatable("fairylights.editLetteredConnection"), this.width / 2, 20, 0xFFFFFF);
         super.render(stack, mouseX, mouseY, delta);
         this.textField.render(stack, mouseX, mouseY, delta);
         final String allowed = this.connection.getAllowedDescription();
         if (!allowed.isEmpty()) {
-            drawString(stack, this.font,
+            drawTextWithShadow(stack, this.textRenderer,
                 Text.translatable("fairylights.editLetteredConnection.allowed_characters", allowed)
-                    .withStyle(Formatting.GRAY),
+                        .formatted(Formatting.GRAY),
                 this.textField.x,
                 this.textField.y + 24,
                 0xFFFFFFFF

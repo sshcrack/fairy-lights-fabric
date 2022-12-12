@@ -1,37 +1,24 @@
 package me.sshcrack.fairylights.client.gui.component;
 
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import me.paulf.fairylights.client.gui.EditLetteredConnectionScreen;
-import me.paulf.fairylights.util.styledstring.Style;
-import me.paulf.fairylights.util.styledstring.StyledString;
-import me.paulf.fairylights.util.styledstring.StyledStringBuilder;
 import me.sshcrack.fairylights.client.gui.EditLetteredConnectionScreen;
 import me.sshcrack.fairylights.util.styledstring.Style;
 import me.sshcrack.fairylights.util.styledstring.StyledString;
 import me.sshcrack.fairylights.util.styledstring.StyledStringBuilder;
-import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
-import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarratedElementType;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
@@ -861,7 +848,7 @@ public final class StyledTextFieldWidget extends ClickableWidget {
         }
         if (visibleText.length() > 0) {
             final Text beforeCaret = (isCaretVisible ? visibleText.substring(0, visibleCaret) : visibleText).toTextComponent();
-            textX = this.font.drawShadow(stack, beforeCaret, offsetX, offsetY, textColor);
+            textX = this.font.drawWithShadow(stack, beforeCaret, offsetX, offsetY, textColor);
         }
         final int caretX;
         if (isCaretVisible) {
@@ -870,14 +857,14 @@ public final class StyledTextFieldWidget extends ClickableWidget {
             caretX = visibleCaret > 0 ? offsetX + this.width - 6 : offsetX;
         }
         if (visibleText.length() > 0 && isCaretVisible && visibleCaret < visibleText.length()) {
-            textX = this.font.drawShadow(stack, visibleText.substring(visibleCaret).toTextComponent(), textX, offsetY, textColor);
+            textX = this.font.drawWithShadow(stack, visibleText.substring(visibleCaret).toTextComponent(), textX, offsetY, textColor);
         }
         if (drawCaret) {
             final int rgb = StyledString.getColor(this.currentStyle.getColor());
             if (this.currentStyle.isItalic()) {
-                fill(stack, caretX - 1, caretX + 1, offsetY - 2, offsetY + 1 + this.font.lineHeight, rgb);
+                fill(stack, caretX - 1, caretX + 1, offsetY - 2, offsetY + 1 + this.font.fontHeight, rgb);
             } else {
-                fill(stack, caretX, offsetY - 2, caretX + 1, offsetY + 1 + this.font.lineHeight, 0xFF000000 | rgb);
+                fill(stack, caretX, offsetY - 2, caretX + 1, offsetY + 1 + this.font.fontHeight, 0xFF000000 | rgb);
             }
         }
         if (drawSelection) {
@@ -888,10 +875,10 @@ public final class StyledTextFieldWidget extends ClickableWidget {
                 start = end;
                 end = t;
             }
-            this.drawSelectionHighlight(stack, start - 1, offsetY - 2, end, offsetY + 1 + this.font.lineHeight);
+            this.drawSelectionHighlight(stack, start - 1, offsetY - 2, end, offsetY + 1 + this.font.fontHeight);
         }
         if (this.hasDraggedSelecton) {
-            if (this.isHovered) {
+            if (this.hovered) {
                 int relativeX = mouseX - this.x;
                 if (this.hasBackground) {
                     relativeX -= 2;
@@ -900,12 +887,12 @@ public final class StyledTextFieldWidget extends ClickableWidget {
                 if (pos >= 0 && pos <= visibleText.length()) {
                     final int x = getWidth(visibleText.substring(0, pos), this.font);
                     final int rgb = StyledString.getColor(this.currentStyle.getColor());
-                    fill(stack, offsetX + x, offsetY - 2, offsetX + x + 1, offsetY + 1 + this.font.lineHeight, 0xFF000000 | rgb);
+                    fill(stack, offsetX + x, offsetY - 2, offsetX + x + 1, offsetY + 1 + this.font.fontHeight, 0xFF000000 | rgb);
                 }
             }
             RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            this.font.drawShadow(stack, this.getSelectedText().toTextComponent(), mouseX + 5, mouseY + 5, textColor | 0xBF000000);
+            RenderSystem.blendFunc(GlConst.GL_SRC_ALPHA, GlConst.GL_ONE_MINUS_SRC_ALPHA);
+            this.font.drawWithShadow(stack, this.getSelectedText().toTextComponent(), mouseX + 5, mouseY + 5, textColor | 0xBF000000);
             RenderSystem.disableBlend();
         }
     }
@@ -918,7 +905,7 @@ public final class StyledTextFieldWidget extends ClickableWidget {
             startX = this.x + this.width;
         }
         RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.blendFunc(GlConst.GL_SRC_ALPHA, GlConst.GL_ONE_MINUS_SRC_ALPHA);
         fill(stack, startX, startY, endX, endY, 0x33FFFFFF);
         RenderSystem.disableBlend();
     }
@@ -941,13 +928,13 @@ public final class StyledTextFieldWidget extends ClickableWidget {
     }
 
     @Override
-    protected MutableText createNarrationMessage() {
+    protected MutableText getNarrationMessage() {
         return Text.translatable("gui.narrate.editBox", this.getMessage(), this.value.toUnstyledString());
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput output) {
-        output.add(NarratedElementType.TITLE, Text.translatable("narration.edit_box", this.value.toUnstyledString()));
+    public void appendNarrations(NarrationMessageBuilder output) {
+        output.put(NarrationPart.TITLE, Text.translatable("narration.edit_box", this.value.toUnstyledString()));
     }
 
     @FunctionalInterface
@@ -955,12 +942,12 @@ public final class StyledTextFieldWidget extends ClickableWidget {
         void onChange(StyledString value);
     }
 
-    private static int getWidth(final StyledString styledString, final Font font) {
+    private static int getWidth(final StyledString styledString, final TextRenderer font) {
         final char[] chars = styledString.toCharArray();
         final Style[] styling = styledString.getStyling();
         int w = 0;
         for (int i = 0, len = styledString.length(); i < len; i++) {
-            w += font.width(Character.toString(chars[i]));
+            w += font.getWidth(Character.toString(chars[i]));
             if (styling[i].isBold()) {
                 w++;
             }
@@ -980,7 +967,7 @@ public final class StyledTextFieldWidget extends ClickableWidget {
         final int start = reverse ? len - 1 : 0;
         final int step = reverse ? -1 : 1;
         for (int i = start, w = 0; i >= 0 && i < len && w < width; i += step) {
-            w += font.width(Character.toString(chars[i]));
+            w += font.getWidth(Character.toString(chars[i]));
             if (styling[i].isBold()) {
                 w++;
             }
