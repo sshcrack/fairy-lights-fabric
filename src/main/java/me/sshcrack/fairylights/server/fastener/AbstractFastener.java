@@ -10,7 +10,7 @@ import me.paulf.fairylights.util.AABBBuilder;
 import me.paulf.fairylights.util.Curve;
 import me.paulf.fairylights.util.RegistryObjects;
 import me.sshcrack.fairylights.server.fastener.accessor.FastenerAccessor;
-import me.sshcrack.fairylights.util.AABBBuilder;
+import me.sshcrack.fairylights.util.BoxBuilder;
 import me.sshcrack.fairylights.util.Curve;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
@@ -18,7 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -126,7 +126,7 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
             this.bounds = new Box(this.getPos());
             return;
         }
-        final AABBBuilder builder = new AABBBuilder();
+        final BoxBuilder builder = new BoxBuilder();
         for (final Connection connection : this.outgoing.values()) {
             final Curve catenary = connection.getCatenary();
             if (catenary == null) {
@@ -296,7 +296,7 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
                 final Connection connection = this.outgoing.get(uuid);
                 connection.deserialize(connectionCompound.getCompound("connection"));
             } else {
-                final ConnectionType<?> type = FairyLights.CONNECTION_TYPES.get().getValue(ResourceLocation.tryParse(connectionCompound.getString("type")));
+                final ConnectionType<?> type = FairyLights.CONNECTION_TYPES.get().getValue(Identifier.tryParse(connectionCompound.getString("type")));
                 if (type != null) {
                     final Connection connection = type.create(this.world, this, uuid);
                     connection.deserialize(connectionCompound.getCompound("connection"));

@@ -1,5 +1,7 @@
 package me.sshcrack.fairylights.client.renderer.block.entity;
 
+import me.sshcrack.fairylights.server.block.entity.FastenerBlockEntity;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
@@ -21,7 +23,7 @@ public final class FastenerBlockEntityRenderer implements BlockEntityRenderer<Fa
     }
 
     @Override
-    public void render(final FastenerBlockEntity fastener, final float delta, final MatrixStack matrix, final MultiBufferSource bufferSource, final int packedLight, final int packedOverlay) {
+    public void render(final FastenerBlockEntity fastener, final float delta, final MatrixStack matrix, final VertexConsumerProvider bufferSource, final int packedLight, final int packedOverlay) {
         fastener.getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(f -> {
             //this.bindTexture(FastenerRenderer.TEXTURE);
             matrix.push();

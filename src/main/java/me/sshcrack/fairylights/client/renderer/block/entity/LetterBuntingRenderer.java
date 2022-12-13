@@ -14,19 +14,19 @@ import me.paulf.fairylights.util.styledstring.StyledString;
 import net.minecraft.client.model.geom.EntityModelLayer;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.VertexConsumerProvider;
 import net.minecraft.client.renderer.Sheets;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Locale;
 import java.util.function.Function;
 
 public class LetterBuntingRenderer extends ConnectionRenderer<LetterBuntingConnection> {
-    public static final Int2ObjectMap<ResourceLocation> MODELS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ&!?".chars()
+    public static final Int2ObjectMap<Identifier> MODELS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ&!?".chars()
         .collect(
             Int2ObjectOpenHashMap::new,
-            (map, cp) -> map.put(cp, new ResourceLocation(FairyLights.ID, "entity/letter/" + Character.getName(cp).toLowerCase(Locale.ROOT).replaceAll("[^a-z]", "_"))),
+            (map, cp) -> map.put(cp, new Identifier(FairyLights.ID, "entity/letter/" + Character.getName(cp).toLowerCase(Locale.ROOT).replaceAll("[^a-z]", "_"))),
             Int2ObjectOpenHashMap::putAll
         );
 
@@ -35,7 +35,7 @@ public class LetterBuntingRenderer extends ConnectionRenderer<LetterBuntingConne
     }
 
     @Override
-    protected void render(final LetterBuntingConnection conn, final Curve catenary, final float delta, final PoseStack matrix, final MultiBufferSource source, final int packedLight, final int packedOverlay) {
+    protected void render(final LetterBuntingConnection conn, final Curve catenary, final float delta, final PoseStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay) {
         super.render(conn, catenary, delta, matrix, source, packedLight, packedOverlay);
         final Letter[] letters = conn.getLetters();
         if (letters == null) {
@@ -47,7 +47,7 @@ public class LetterBuntingRenderer extends ConnectionRenderer<LetterBuntingConne
         }
         final VertexConsumer buf = source.getBuffer(Sheets.cutoutBlockSheet());
         for (final Letter letter : letters) {
-            final ResourceLocation path = MODELS.get(letter.getLetter());
+            final Identifier path = MODELS.get(letter.getLetter());
             if (path == null) {
                 continue;
             }

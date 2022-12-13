@@ -1,21 +1,12 @@
 package me.sshcrack.fairylights.server.item;
 
-import me.paulf.fairylights.server.connection.ConnectionTypes;
-import me.paulf.fairylights.server.item.crafting.FLCraftingRecipes;
-import me.paulf.fairylights.util.styledstring.StyledString;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.*;
-import net.minecraft.world.level.Level;
+import me.sshcrack.fairylights.server.connection.ConnectionTypes;
+import net.minecraft.item.Item;
 
 import java.util.List;
 
 public class PennantBuntingConnectionItem extends ConnectionItem {
-    public PennantBuntingConnectionItem(final Item.Properties properties) {
+    public PennantBuntingConnectionItem(final Item.Settings properties) {
         super(properties, ConnectionTypes.PENNANT_BUNTING);
     }
 

@@ -1,5 +1,7 @@
 package me.sshcrack.fairylights.server.fastener;
 
+import me.sshcrack.fairylights.server.connection.Connection;
+import me.sshcrack.fairylights.server.connection.ConnectionType;
 import me.sshcrack.fairylights.server.fastener.accessor.FastenerAccessor;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
@@ -9,6 +11,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface Fastener<F extends FastenerAccessor> extends ICapabilitySerializable<NbtCompound> {

@@ -11,6 +11,7 @@ public final class FLMth {
     public static final float PI = (float) Math.PI;
 
     public static final float HALF_PI = (float) (Math.PI / 2);
+    public static final float TWO_PI = ((float)Math.PI / 2F);
 
     public static final float TAU = (float) (2 * Math.PI);
 

@@ -1,18 +1,9 @@
 package me.sshcrack.fairylights.server.item;
 
-import me.paulf.fairylights.server.feature.light.LightBehavior;
-import me.paulf.fairylights.util.EmptyProvider;
-import me.paulf.fairylights.util.SimpleProvider;
 import me.sshcrack.fairylights.server.feature.light.LightBehavior;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Box;
 
-import javax.swing.*;
 import java.util.Optional;
 
 public interface LightVariant<T extends LightBehavior> {

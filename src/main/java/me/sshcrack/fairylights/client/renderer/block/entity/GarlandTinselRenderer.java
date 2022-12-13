@@ -1,10 +1,13 @@
 package me.sshcrack.fairylights.client.renderer.block.entity;
 
+import me.sshcrack.fairylights.client.FLModelLayers;
 import me.sshcrack.fairylights.server.connection.GarlandTinselConnection;
 import me.sshcrack.fairylights.util.Catenary;
 import me.sshcrack.fairylights.util.RandomArray;
-import net.minecraft.client.model.Model;
-import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.*;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
@@ -29,7 +32,7 @@ public class GarlandTinselRenderer extends ConnectionRenderer<GarlandTinselConne
     }
 
     @Override
-    protected void renderSegment(final GarlandTinselConnection connection, final Catenary.SegmentView it, final float delta, final MatrixStack matrix, final int packedLight, final MultiBufferSource source, final int packedOverlay) {
+    protected void renderSegment(final GarlandTinselConnection connection, final Catenary.SegmentView it, final float delta, final MatrixStack matrix, final int packedLight, final VertexConsumerProvider source, final int packedOverlay) {
         super.renderSegment(connection, it, delta, matrix, packedLight, source, packedOverlay);
         final int color = connection.getColor();
         final float r = ((color >> 16) & 0xFF) / 255.0F;
@@ -43,25 +46,25 @@ public class GarlandTinselRenderer extends ConnectionRenderer<GarlandTinselConne
         final int rings = MathHelper.ceil(length * 64);
         final int hash = connection.getUUID().hashCode();
         final int index = it.getIndex();
-        final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.buffer(source, RenderType::entityCutout);
+        final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.buffer(source, RenderLayer::getEntityCutout);
         for (int i = 0; i < rings; i++) {
             final double t = i / (float) rings * length;
-            matrix.pushPose();
+            matrix.push();
             matrix.translate(t, 0.0F, 0.0F);
             final float rotX = RAND.get(31 * (index + 31 * i) + hash) * 22;
             final float rotY = RAND.get(31 * (index + 3 + 31 * i) + hash) * 180;
             final float rotZ = RAND.get(31 * (index + 7 + 31 * i) + hash) * 180;
-            matrix.mulPose(Vector3f.XP.rotationDegrees(rotZ));
-            matrix.mulPose(Vector3f.YP.rotationDegrees(rotY));
-            matrix.mulPose(Vector3f.ZP.rotationDegrees(rotX));
+            matrix.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(rotZ));
+            matrix.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotY));
+            matrix.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotX));
             matrix.scale(1.0F, RAND.get(i * 63) * 0.1F + 1.0F, 0.5F);
-            this.strip.renderToBuffer(matrix, buf, packedLight, packedOverlay, r, g, b, 1.0F);
-            matrix.popPose();
+            this.strip.render(matrix, buf, packedLight, packedOverlay, r, g, b, 1.0F);
+            matrix.pop();
         }
-        matrix.popPose();
+        matrix.pop();
     }
 
-    public static LayerDefinition wireLayer() {
+    public static TexturedModelData wireLayer() {
         return WireModel.createLayer(62, 0, 1);
     }
 
@@ -69,20 +72,20 @@ public class GarlandTinselRenderer extends ConnectionRenderer<GarlandTinselConne
         final ModelPart root;
 
         StripModel(final ModelPart root) {
-            super(RenderType::entityCutout);
+            super(RenderLayer::getEntityCutout);
             this.root = root;
         }
 
-        public static LayerDefinition createLayer() {
-            MeshDefinition mesh = new MeshDefinition();
-            mesh.getRoot().addOrReplaceChild("root", CubeListBuilder.create()
-                .texOffs(62, 0)
-                .addBox(-0.5F, -3.0F, 0.0F, 1.0F, 6.0F, 0.0F), PartPose.ZERO);
-            return LayerDefinition.create(mesh, 128, 128);
+        public static TexturedModelData createLayer() {
+            ModelData mesh = new ModelData();
+            mesh.getRoot().addChild("root", ModelPartBuilder.create()
+                .uv(62, 0)
+                .cuboid(-0.5F, -3.0F, 0.0F, 1.0F, 6.0F, 0.0F), ModelTransform.NONE);
+            return TexturedModelData.of(mesh, 128, 128);
         }
 
         @Override
-        public void renderToBuffer(final PoseStack matrix, final VertexConsumer builder, final int light, final int overlay, final float r, final float g, final float b, final float a) {
+        public void render(final MatrixStack matrix, final VertexConsumer builder, final int light, final int overlay, final float r, final float g, final float b, final float a) {
             this.root.render(matrix, builder, light, overlay, r, g, b, a);
         }
     }

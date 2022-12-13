@@ -1,20 +1,11 @@
 package me.sshcrack.fairylights.client.renderer.block.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
-import me.paulf.fairylights.client.FLModelLayers;
-import me.paulf.fairylights.server.connection.HangingLightsConnection;
-import me.paulf.fairylights.server.feature.light.Light;
-import me.paulf.fairylights.server.item.SimpleLightVariant;
-import me.paulf.fairylights.util.FLMth;
 import me.sshcrack.fairylights.client.FLModelLayers;
+import me.sshcrack.fairylights.server.connection.HangingLightsConnection;
+import me.sshcrack.fairylights.server.feature.light.Light;
+import me.sshcrack.fairylights.util.matrix.MatrixStack;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.geom.EntityModelLayer;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.function.Function;
 
@@ -32,7 +23,7 @@ public class HangingLightsRenderer extends ConnectionRenderer<HangingLightsConne
     }
 
     @Override
-    public void render(final HangingLightsConnection conn, final float delta, final PoseStack matrix, final MultiBufferSource source, final int packedLight, final int packedOverlay) {
+    public void render(final HangingLightsConnection conn, final float delta, final MatrixStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay) {
         super.render(conn, delta, matrix, source, packedLight, packedOverlay);
         final Light<?>[] lights = conn.getFeatures();
         if (lights == null) {
@@ -41,7 +32,7 @@ public class HangingLightsRenderer extends ConnectionRenderer<HangingLightsConne
         final LightRenderer.Data data = this.lights.start(source);
         for (int i = 0; i < lights.length; i++) {
             final Light<?> light = lights[i];
-            final Vec3 pos = light.getPoint(delta);
+            final Vec3d pos = light.getPoint(delta);
             matrix.pushPose();
             matrix.translate(pos.x, pos.y, pos.z);
             matrix.mulPose(Vector3f.YP.rotation(-light.getYaw(delta)));

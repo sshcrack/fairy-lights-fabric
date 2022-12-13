@@ -1,5 +1,6 @@
 package me.sshcrack.fairylights.client.renderer.block.entity;
 
+import me.sshcrack.fairylights.client.ClientProxy;
 import me.sshcrack.fairylights.server.connection.Connection;
 import me.sshcrack.fairylights.util.Catenary;
 import me.sshcrack.fairylights.util.Curve;
@@ -7,6 +8,7 @@ import me.sshcrack.fairylights.util.FLMth;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3f;
@@ -26,7 +28,7 @@ public abstract class ConnectionRenderer<C extends Connection> {
         this.wireInflate = wireInflate;
     }
 
-    public void render(final C conn, final float delta, final MatrixStack matrix, final MultiBufferSource source, final int packedLight, final int packedOverlay) {
+    public void render(final C conn, final float delta, final MatrixStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay) {
         final Curve currCat = conn.getCatenary();
         final Curve prevCat = conn.getPrevCatenary();
         if (currCat != null && prevCat != null) {
@@ -55,9 +57,9 @@ public abstract class ConnectionRenderer<C extends Connection> {
         return 0xFFFFFF;
     }
 
-    protected void render(final C conn, final Curve catenary, final float delta, final MatrixStack matrix, final MultiBufferSource source, final int packedLight, final int packedOverlay) {}
+    protected void render(final C conn, final Curve catenary, final float delta, final MatrixStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay) {}
 
-    protected void renderSegment(final C connection, final Catenary.SegmentView it, final float delta, final MatrixStack matrix, final int packedLight, final MultiBufferSource source, final int packedOverlay) {}
+    protected void renderSegment(final C connection, final Catenary.SegmentView it, final float delta, final MatrixStack matrix, final int packedLight, final VertexConsumerProvider source, final int packedOverlay) {}
 
     public static class WireModel extends Model {
         final ModelPart root;

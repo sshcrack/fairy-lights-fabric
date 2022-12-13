@@ -5,13 +5,15 @@ import me.paulf.fairylights.server.connection.ConnectionTypes;
 import me.paulf.fairylights.server.item.crafting.FLCraftingRecipes;
 import me.paulf.fairylights.server.string.StringType;
 import me.paulf.fairylights.util.RegistryObjects;
+import me.sshcrack.fairylights.server.connection.ConnectionTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -22,8 +24,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
-public final class HangingLightsConnectionItem extends me.paulf.fairylights.server.item.ConnectionItem {
-    public HangingLightsConnectionItem(final Properties properties) {
+public final class HangingLightsConnectionItem extends ConnectionItem {
+    public HangingLightsConnectionItem(final Item.Settings properties) {
         super(properties, ConnectionTypes.HANGING_LIGHTS);
     }
 
@@ -32,7 +34,7 @@ public final class HangingLightsConnectionItem extends me.paulf.fairylights.serv
     public void appendHoverText(final ItemStack stack, @Nullable final Level world, final List<Component> tooltip, final TooltipFlag flag) {
         final CompoundTag compound = stack.getTag();
         if (compound != null) {
-            final ResourceLocation name = RegistryObjects.getName(FairyLights.STRING_TYPES.get(), getString(compound));
+            final Identifier name = RegistryObjects.getName(FairyLights.STRING_TYPES.get(), getString(compound));
             tooltip.add(Component.translatable("item." + name.getNamespace() + "." + name.getPath()).withStyle(ChatFormatting.GRAY));
         }
         if (compound != null && compound.contains("pattern", Tag.TAG_LIST)) {
@@ -59,7 +61,7 @@ public final class HangingLightsConnectionItem extends me.paulf.fairylights.serv
     }
 
     public static StringType getString(final CompoundTag tag) {
-        return Objects.requireNonNull(FairyLights.STRING_TYPES.get().getValue(ResourceLocation.tryParse(tag.getString("string"))));
+        return Objects.requireNonNull(FairyLights.STRING_TYPES.get().getValue(Identifier.tryParse(tag.getString("string"))));
     }
 
     public static void setString(final CompoundTag tag, final StringType string) {

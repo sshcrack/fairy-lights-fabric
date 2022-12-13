@@ -16,21 +16,32 @@ import me.paulf.fairylights.util.Curve;
 import me.paulf.fairylights.util.styledstring.Style;
 import me.paulf.fairylights.util.styledstring.StyledString;
 import me.sshcrack.fairylights.FairyLightsMod;
+import me.sshcrack.fairylights.client.FLModelLayers;
 import me.sshcrack.fairylights.server.connection.PennantBuntingConnection;
+import me.sshcrack.fairylights.server.feature.Pennant;
 import me.sshcrack.fairylights.server.item.FLItems;
+import me.sshcrack.fairylights.util.Curve;
+import me.sshcrack.fairylights.util.styledstring.StyledString;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.geom.EntityModelLayer;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.renderer.VertexConsumerProvider;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.item.Item;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.phys.Vec3;
 
@@ -59,11 +70,11 @@ public class PennantBuntingRenderer extends ConnectionRenderer<PennantBuntingCon
     }
 
     @Override
-    protected void render(final PennantBuntingConnection conn, final Curve catenary, final float delta, final PoseStack matrix, final MultiBufferSource source, final int packedLight, final int packedOverlay) {
+    protected void render(final PennantBuntingConnection conn, final Curve catenary, final float delta, final PoseStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay) {
         super.render(conn, catenary, delta, matrix, source, packedLight, packedOverlay);
         final Pennant[] currLights = conn.getFeatures();
         if (currLights != null) {
-            final Font font = Minecraft.getInstance().font;
+            final TextRenderer font = MinecraftClient.getInstance().textRenderer;
             final VertexConsumer buf = source.getBuffer(Sheets.cutoutBlockSheet());
             final int count = currLights.length;
             if (count == 0) {
@@ -80,8 +91,8 @@ public class PennantBuntingRenderer extends ConnectionRenderer<PennantBuntingCon
                 final float r = ((color >> 16) & 0xFF) / 255.0F;
                 final float g = ((color >> 8) & 0xFF) / 255.0F;
                 final float b = (color & 0xFF) / 255.0F;
-                final BakedModel model = Minecraft.getInstance().getModelManager().getModel(this.models.getOrDefault(currPennant.getItem(), TRIANGLE_MODEL));
-                final Vec3 pos = currPennant.getPoint(delta);
+                final BakedModel model = MinecraftClient.getInstance().getBakedModelManager().getModel(this.models.getOrDefault(currPennant.getItem(), TRIANGLE_MODEL));
+                final Vec3d pos = currPennant.getPoint(delta);
                 matrix.pushPose();
                 matrix.translate(pos.x, pos.y, pos.z);
                 matrix.mulPose(Vector3f.YP.rotation(-currPennant.getYaw(delta)));
@@ -99,7 +110,7 @@ public class PennantBuntingRenderer extends ConnectionRenderer<PennantBuntingCon
         }
     }
 
-    private void drawLetter(final PoseStack matrix, final MultiBufferSource source, final Pennant pennant, final int packedLight, final Font font, final StyledString text, final int index, final int side, final float delta) {
+    private void drawLetter(final PoseStack matrix, final VertexConsumerProvider source, final Pennant pennant, final int packedLight, final Font font, final StyledString text, final int index, final int side, final float delta) {
         final Style style = text.styleAt(index);
         final StringBuilder bob = new StringBuilder();
         if (style.isObfuscated()) bob.append(ChatFormatting.OBFUSCATED);

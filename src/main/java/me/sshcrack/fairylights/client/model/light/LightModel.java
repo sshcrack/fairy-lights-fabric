@@ -2,7 +2,7 @@ package me.sshcrack.fairylights.client.model.light;
 
 import me.sshcrack.fairylights.server.feature.light.Light;
 import me.sshcrack.fairylights.server.feature.light.LightBehavior;
-import me.sshcrack.fairylights.util.AABBBuilder;
+import me.sshcrack.fairylights.util.BoxBuilder;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
@@ -144,7 +144,7 @@ public abstract class LightModel<T extends LightBehavior> extends Model {
     }
 
     static class AABBVertexBuilder implements VertexConsumer {
-        final AABBBuilder builder = new AABBBuilder();
+        final BoxBuilder builder = new BoxBuilder();
 
         @Override
         public VertexConsumer vertex(final double x, final double y, final double z) {

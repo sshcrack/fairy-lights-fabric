@@ -10,7 +10,7 @@ import me.paulf.fairylights.server.feature.light.LightBehavior;
 import me.sshcrack.fairylights.client.model.light.LightModel;
 import me.sshcrack.fairylights.server.feature.light.LightBehavior;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.VertexConsumerProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -27,11 +27,11 @@ public class LightBlockEntityRenderer implements BlockEntityRenderer<LightBlockE
     }
 
     @Override
-    public void render(final LightBlockEntity entity, final float delta, final MatrixStack matrix, final MultiBufferSource source, final int packedLight, final int packedOverlay) {
+    public void render(final LightBlockEntity entity, final float delta, final MatrixStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay) {
         this.render(entity, delta, matrix, source, packedLight, packedOverlay, entity.getLight());
     }
 
-    private <T extends LightBehavior> void render(final LightBlockEntity entity, final float delta, final MatrixStack matrix, final MultiBufferSource source, final int packedLight, final int packedOverlay, final Light<T> light) {
+    private <T extends LightBehavior> void render(final LightBlockEntity entity, final float delta, final MatrixStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay, final Light<T> light) {
         final LightModel<T> model = this.lights.getModel(light, -1);
         final Box box = model.getBounds();
         final BlockState state = entity.getBlockState();

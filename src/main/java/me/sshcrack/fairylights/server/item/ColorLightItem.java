@@ -1,15 +1,14 @@
 package me.sshcrack.fairylights.server.item;
 
-import me.paulf.fairylights.server.block.LightBlock;
-import net.minecraft.core.NonNullList;
+import me.sshcrack.fairylights.server.block.LightBlock;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.text.Text;
+import net.minecraft.util.DyeColor;
+import net.minecraft.util.collection.DefaultedList;
 
 public class ColorLightItem extends LightItem {
     public ColorLightItem(final LightBlock light, final Item.Settings properties) {
@@ -17,19 +16,19 @@ public class ColorLightItem extends LightItem {
     }
 
     @Override
-    public Component getName(final ItemStack stack) {
-        final CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains("colors", Tag.TAG_LIST)) {
-            return Component.translatable("format.fairylights.color_changing", super.getName(stack));
+    public Text getName(final ItemStack stack) {
+        final NbtCompound tag = stack.getNbt();
+        if (tag != null && tag.contains("colors", NbtElement.LIST_TYPE)) {
+            return Text.translatable("format.fairylights.color_changing", super.getName(stack));
         }
-        return me.paulf.fairylights.server.item.DyeableItem.getDisplayName(stack, super.getName(stack));
+        return DyeableItem.getDisplayName(stack, super.getName(stack));
     }
 
     @Override
-    public void fillItemCategory(final CreativeModeTab group, final NonNullList<ItemStack> items) {
-        if (this.allowedIn(group)) {
+    public void appendStacks(final ItemGroup group, final DefaultedList<ItemStack> items) {
+        if (this.isIn(group)) {
             for (final DyeColor dye : DyeColor.values()) {
-                items.add(me.paulf.fairylights.server.item.DyeableItem.setColor(new ItemStack(this), dye));
+                items.add(DyeableItem.setColor(new ItemStack(this), dye));
             }
         }
     }

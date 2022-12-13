@@ -5,6 +5,8 @@ import me.sshcrack.fairylights.server.item.LightVariant;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
@@ -12,8 +14,11 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -69,7 +74,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
     }
 
     @Override
-    public BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
+    public BlockEntity createBlockEntity(final BlockPos pos, final BlockState state) {
         return new LightBlockEntity(pos, state);
     }
 
@@ -118,8 +123,8 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
     }
 
     @Override
-    public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        super.setPlacedBy(world, pos, state, placer, stack);
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.onPlaced(world, pos, state, placer, stack);
         final BlockEntity entity = world.getBlockEntity(pos);
         if (entity instanceof LightBlockEntity) {
             final ItemStack lightItem = stack.copy();
@@ -139,7 +144,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
     }
 
     @Override
-    public InteractionResult use(final BlockState state, final Level world, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
+    public InteractionResult use(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit) {
         final BlockEntity entity = world.getBlockEntity(pos);
         if (entity instanceof LightBlockEntity) {
             ((LightBlockEntity) entity).interact(world, pos, state, player, hand, hit);
@@ -150,7 +155,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void animateTick(final BlockState state, final Level world, final BlockPos pos, final RandomSource rng) {
+    public void animateTick(final BlockState state, final World world, final BlockPos pos, final Random rng) {
         super.animateTick(state, world, pos, rng);
         final BlockEntity entity = world.getBlockEntity(pos);
         if (entity instanceof LightBlockEntity) {

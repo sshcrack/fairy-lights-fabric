@@ -74,7 +74,7 @@ public class LightRenderer {
             .build();
     }
 
-    public Data start(final MultiBufferSource source) {
+    public Data start(final VertexConsumerProvider source) {
         final VertexConsumer buf = ClientProxy.TRANSLUCENT_TEXTURE.buffer(source, ForgeRenderTypes::getUnsortedTranslucent);
         ForwardingVertexConsumer translucent = new ForwardingVertexConsumer() {
             @Override

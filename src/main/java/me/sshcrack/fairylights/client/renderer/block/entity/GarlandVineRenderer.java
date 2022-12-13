@@ -16,7 +16,7 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.VertexConsumerProvider;
 import net.minecraft.client.renderer.RenderType;
 
 import java.util.function.Function;
@@ -34,7 +34,7 @@ public class GarlandVineRenderer extends ConnectionRenderer<GarlandVineConnectio
     }
 
     @Override
-    protected void render(final GarlandVineConnection conn, final Curve catenary, final float delta, final PoseStack matrix, final MultiBufferSource source, final int packedLight, final int packedOverlay) {
+    protected void render(final GarlandVineConnection conn, final Curve catenary, final float delta, final PoseStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay) {
         super.render(conn, catenary, delta, matrix, source, packedLight, packedOverlay);
         final int hash = conn.getUUID().hashCode();
         final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.buffer(source, RenderType::entityCutout);

@@ -1,6 +1,6 @@
 package me.sshcrack.fairylights.server.item;
 
-import net.minecraft.block.LightBlock;
+import me.sshcrack.fairylights.server.block.LightBlock;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -35,7 +35,7 @@ public class LightItem extends BlockItem {
     @Override
     public void appendTooltip(final ItemStack stack, @Nullable final World world, final List<Text> tooltip, final TooltipContext flag) {
         super.appendTooltip(stack, world, tooltip, flag);
-        final NbtCompound tag = stack.getTag();
+        final NbtCompound tag = stack.getNbt();
         if (tag != null) {
             if (tag.getBoolean("twinkle")) {
                 tooltip.add(Text.translatable("item.fairyLights.twinkle").formatted(Formatting.GRAY, Formatting.ITALIC));
@@ -43,7 +43,7 @@ public class LightItem extends BlockItem {
             if (tag.contains("colors", NbtElement.LIST_TYPE)) {
                 final NbtList colors = tag.getList("colors", NbtElement.INT_TYPE);
                 for (int i = 0; i < colors.size(); i++) {
-                    tooltip.add(DyeableItem.getColorName(colors.getInt(i)).copy().withStyle(Formatting.GRAY));
+                    tooltip.add(DyeableItem.getColorName(colors.getInt(i)).copy().formatted(Formatting.GRAY));
                 }
             }
         }

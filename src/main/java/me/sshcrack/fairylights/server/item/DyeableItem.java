@@ -1,11 +1,11 @@
 package me.sshcrack.fairylights.server.item;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.text.Text;
+import net.minecraft.util.DyeColor;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import java.util.Optional;
 public final class DyeableItem {
     private DyeableItem() {}
 
-    public static Component getColorName(final int color) {
+    public static Text getColorName(final int color) {
         final int r = color >> 16 & 0xFF;
         final int g = color >> 8 & 0xFF;
         final int b = color & 0xFF;
@@ -35,12 +35,12 @@ public final class DyeableItem {
                 closestDist = dist;
             }
         }
-        final Component colorName = Component.translatable("color.fairylights." + closest.getName());
-        return closestDist == 0 ? colorName : Component.translatable("format.fairylights.dyed_colored", colorName);
+        final Text colorName = Text.translatable("color.fairylights." + closest.getName());
+        return closestDist == 0 ? colorName : Text.translatable("format.fairylights.dyed_colored", colorName);
     }
 
-    public static Component getDisplayName(final ItemStack stack, final Component name) {
-        return Component.translatable("format.fairylights.colored", getColorName(getColor(stack)), name);
+    public static Text getDisplayName(final ItemStack stack, final Text name) {
+        return Text.translatable("format.fairylights.colored", getColorName(getColor(stack)), name);
     }
 
     public static int getColor(final DyeColor color) {
@@ -50,8 +50,8 @@ public final class DyeableItem {
         if (color == DyeColor.GRAY) {
             return 0x606060;
         }
-        float[] colors = color.getTextureDiffuseColors();
-        return Mth.floor(colors[0] * 255.0F) << 16 | Mth.floor(colors[1] * 255.0F) << 8 | Mth.floor(colors[2] * 255.0F);
+        float[] colors = color.getColorComponents();
+        return MathHelper.floor(colors[0] * 255.0F) << 16 | MathHelper.floor(colors[1] * 255.0F) << 8 | MathHelper.floor(colors[2] * 255.0F);
     }
 
     public static Optional<DyeColor> getDyeColor(final ItemStack stack) {
@@ -64,25 +64,25 @@ public final class DyeableItem {
     }
 
     public static ItemStack setColor(final ItemStack stack, final int color) {
-        setColor(stack.getOrCreateTag(), color);
+        setColor(stack.getOrCreateNbt(), color);
         return stack;
     }
 
-    public static CompoundTag setColor(final CompoundTag tag, final DyeColor dye) {
+    public static NbtCompound setColor(final NbtCompound tag, final DyeColor dye) {
         return setColor(tag, getColor(dye));
     }
 
-    public static CompoundTag setColor(final CompoundTag tag, final int color) {
+    public static NbtCompound setColor(final NbtCompound tag, final int color) {
         tag.putInt("color", color);
         return tag;
     }
 
     public static int getColor(final ItemStack stack) {
-        final CompoundTag tag = stack.getTag();
+        final NbtCompound tag = stack.getNbt();
         return tag != null ? getColor(tag) : 0xFFFFFF;
     }
 
-    public static int getColor(final CompoundTag tag) {
-        return tag.contains("color", Tag.TAG_INT) ? tag.getInt("color") : 0xFFFFFF;
+    public static int getColor(final NbtCompound tag) {
+        return tag.contains("color", NbtElement.INT_TYPE) ? tag.getInt("color") : 0xFFFFFF;
     }
 }

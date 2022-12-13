@@ -1,25 +1,25 @@
 package me.sshcrack.fairylights.server.item;
 
-import net.minecraft.core.NonNullList;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.DyeColor;
+import net.minecraft.util.collection.DefaultedList;
 
 public class PennantItem extends Item {
-    public PennantItem(final Item.Properties properties) {
+    public PennantItem(final Item.Settings properties) {
         super(properties);
     }
 
     @Override
-    public Component getName(final ItemStack stack) {
+    public Text getName(final ItemStack stack) {
         return DyeableItem.getDisplayName(stack, super.getName(stack));
     }
 
     @Override
-    public void fillItemCategory(final CreativeModeTab tab, final NonNullList<ItemStack> subItems) {
-        if (this.allowedIn(tab)) {
+    public void appendStacks(final ItemGroup tab, final DefaultedList<ItemStack> subItems) {
+        if (this.isIn(tab)) {
             for (final DyeColor dye : DyeColor.values()) {
                 subItems.add(DyeableItem.setColor(new ItemStack(this), dye));
             }

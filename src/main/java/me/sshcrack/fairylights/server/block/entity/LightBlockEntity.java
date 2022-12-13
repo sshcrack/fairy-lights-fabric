@@ -1,22 +1,23 @@
 package me.sshcrack.fairylights.server.block.entity;
 
 import me.paulf.fairylights.server.block.LightBlock;
-import me.paulf.fairylights.server.feature.light.Light;
-import me.paulf.fairylights.server.item.LightVariant;
 import me.paulf.fairylights.server.item.SimpleLightVariant;
 import me.paulf.fairylights.server.sound.FLSounds;
 import me.paulf.fairylights.util.FLMth;
 import me.paulf.fairylights.util.matrix.MatrixStack;
-import net.minecraft.core.BlockPos;
+import me.sshcrack.fairylights.server.feature.light.Light;
+import me.sshcrack.fairylights.server.item.LightVariant;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -36,7 +37,7 @@ public class LightBlockEntity extends BlockEntity {
     }
 
     public void setItemStack(final ItemStack stack) {
-        this.light = new Light<>(0, Vec3.ZERO, 0.0F, 0.0F, stack, LightVariant.get(stack).orElse(SimpleLightVariant.FAIRY_LIGHT), 0.0F);
+        this.light = new Light<>(0, Vec3d.ZERO, 0.0F, 0.0F, stack, LightVariant.get(stack).orElse(SimpleLightVariant.FAIRY_LIGHT), 0.0F);
         this.setChanged();
     }
 

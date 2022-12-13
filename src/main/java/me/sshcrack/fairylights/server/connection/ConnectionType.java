@@ -1,14 +1,14 @@
 package me.sshcrack.fairylights.server.connection;
 
-import me.paulf.fairylights.server.fastener.Fastener;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
+import me.sshcrack.fairylights.server.fastener.Fastener;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
+import net.minecraft.world.World;
 
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class ConnectionType<T extends me.paulf.fairylights.server.connection.Connection> {
+public class ConnectionType<T extends Connection> {
     private final Factory<T> factory;
 
     private final Supplier<? extends Item> item;
@@ -18,7 +18,7 @@ public class ConnectionType<T extends me.paulf.fairylights.server.connection.Con
         this.item = builder.item;
     }
 
-    public T create(final Level world, final Fastener<?> fastener, final UUID uuid) {
+    public T create(final World world, final Fastener<?> fastener, final UUID uuid) {
         return this.factory.create(this, world, fastener, uuid);
     }
 
@@ -26,7 +26,7 @@ public class ConnectionType<T extends me.paulf.fairylights.server.connection.Con
         return this.item.get();
     }
 
-    public static final class Builder<T extends me.paulf.fairylights.server.connection.Connection> {
+    public static final class Builder<T extends Connection> {
         final Factory<T> factory;
 
         Supplier<? extends Item> item = () -> Items.AIR;
@@ -44,12 +44,12 @@ public class ConnectionType<T extends me.paulf.fairylights.server.connection.Con
             return new ConnectionType<>(this);
         }
 
-        public static <T extends me.paulf.fairylights.server.connection.Connection> Builder<T> create(final Factory<T> factory) {
+        public static <T extends Connection> Builder<T> create(final Factory<T> factory) {
             return new Builder<>(factory);
         }
     }
 
-    public interface Factory<T extends me.paulf.fairylights.server.connection.Connection> {
-        T create(final ConnectionType<T> type, final Level world, final Fastener<?> fastener, final UUID uuid);
+    public interface Factory<T extends Connection> {
+        T create(final ConnectionType<T> type, final World world, final Fastener<?> fastener, final UUID uuid);
     }
 }

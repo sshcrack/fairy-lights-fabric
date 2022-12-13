@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public final class AABBBuilder {
+public final class BoxBuilder {
     private double minX;
 
     private double minY;
@@ -23,23 +23,23 @@ public final class AABBBuilder {
 
     private double maxZ;
 
-    public AABBBuilder() {}
+    public BoxBuilder() {}
 
-    public AABBBuilder(final BlockPos pos) {
+    public BoxBuilder(final BlockPos pos) {
         Objects.requireNonNull(pos, "pos");
         this.maxX = (this.minX = pos.getX()) + 1;
         this.maxY = (this.minY = pos.getY()) + 1;
         this.maxZ = (this.minZ = pos.getZ()) + 1;
     }
 
-    public AABBBuilder(final Vec3d min, final Vec3d max) {
+    public BoxBuilder(final Vec3d min, final Vec3d max) {
         this(
             Objects.requireNonNull(min, "min").x, min.y, min.z,
             Objects.requireNonNull(max, "max").x, max.y, max.z
         );
     }
 
-    public AABBBuilder(final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ) {
+    public BoxBuilder(final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ) {
         this.minX = Math.min(minX, maxX);
         this.minY = Math.min(minY, maxY);
         this.minZ = Math.min(minZ, maxZ);
@@ -48,15 +48,15 @@ public final class AABBBuilder {
         this.maxZ = Math.max(minZ, maxZ);
     }
 
-    public AABBBuilder add(final Vec3d point) {
+    public BoxBuilder add(final Vec3d point) {
         return this.add(Objects.requireNonNull(point, "point").x, point.y, point.z);
     }
 
-    public AABBBuilder add(final Vec3i point) {
+    public BoxBuilder add(final Vec3i point) {
         return this.add(Objects.requireNonNull(point, "point").getX(), point.getY(), point.getZ());
     }
 
-    public AABBBuilder add(final double x, final double y, final double z) {
+    public BoxBuilder add(final double x, final double y, final double z) {
         this.minX += x;
         this.minY += y;
         this.minZ += z;
@@ -66,11 +66,11 @@ public final class AABBBuilder {
         return this;
     }
 
-    public AABBBuilder include(final Vec3d point) {
+    public BoxBuilder include(final Vec3d point) {
         return this.include(Objects.requireNonNull(point, "point").x, point.y, point.z);
     }
 
-    public AABBBuilder include(final double x, final double y, final double z) {
+    public BoxBuilder include(final double x, final double y, final double z) {
         if (x < this.minX) this.minX = x;
         if (y < this.minY) this.minY = y;
         if (z < this.minZ) this.minZ = z;
@@ -80,7 +80,7 @@ public final class AABBBuilder {
         return this;
     }
 
-    public AABBBuilder expand(final double amount) {
+    public BoxBuilder expand(final double amount) {
         this.minX -= amount;
         this.minY -= amount;
         this.minZ -= amount;

@@ -13,13 +13,13 @@ import me.sshcrack.fairylights.client.model.light.BowModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelLayer;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.VertexConsumerProvider;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.FenceBlock;
@@ -45,7 +45,7 @@ public class FastenerRenderer {
         this.bow = new BowModel(baker.apply(FLModelLayers.BOW));
     }
 
-    public void render(final Fastener<?> fastener, final float delta, final PoseStack matrix, final MultiBufferSource source, final int packedLight, final int packedOverlay) {
+    public void render(final Fastener<?> fastener, final float delta, final PoseStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay) {
         boolean renderBow = true;
         for (final Connection conn : fastener.getAllConnections()) {
             if (conn.getFastener() == fastener) {
@@ -58,7 +58,7 @@ public class FastenerRenderer {
         }
     }
 
-    private boolean renderBow(Fastener<?> fastener, PoseStack matrix, MultiBufferSource source, int packedLight, int packedOverlay) {
+    private boolean renderBow(Fastener<?> fastener, PoseStack matrix, VertexConsumerProvider source, int packedLight, int packedOverlay) {
         if (fastener instanceof FenceFastener) {
             final Level world = fastener.getWorld();
             if (world == null) {
@@ -115,7 +115,7 @@ public class FastenerRenderer {
         matrix.popPose();
     }
 
-    private void renderConnection(final float delta, final PoseStack matrix, final MultiBufferSource source, final int packedLight, final int packedOverlay, final Connection conn) {
+    private void renderConnection(final float delta, final PoseStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay, final Connection conn) {
         if (conn instanceof HangingLightsConnection) {
             this.hangingLights.render((HangingLightsConnection) conn, delta, matrix, source, packedLight, packedOverlay);
         } else if (conn instanceof GarlandVineConnection) {
@@ -129,7 +129,7 @@ public class FastenerRenderer {
         }
     }
 
-    public static void renderBakedModel(final ResourceLocation path, final PoseStack matrix, final VertexConsumer buf, final float r, final float g, final float b, final int packedLight, final int packedOverlay) {
+    public static void renderBakedModel(final Identifier path, final PoseStack matrix, final VertexConsumer buf, final float r, final float g, final float b, final int packedLight, final int packedOverlay) {
         renderBakedModel(Minecraft.getInstance().getModelManager().getModel(path), matrix, buf, r, g, b, packedLight, packedOverlay);
     }
 
