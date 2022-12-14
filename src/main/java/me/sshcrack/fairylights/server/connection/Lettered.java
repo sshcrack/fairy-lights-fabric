@@ -1,11 +1,11 @@
 package me.sshcrack.fairylights.server.connection;
 
-import me.paulf.fairylights.server.collision.Intersection;
-import me.paulf.fairylights.util.styledstring.StyledString;
-import me.paulf.fairylights.util.styledstring.StylingPresence;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.world.entity.player.Player;
+import me.sshcrack.fairylights.server.collision.Intersection;
+import me.sshcrack.fairylights.util.styledstring.StyledString;
+import me.sshcrack.fairylights.util.styledstring.StylingPresence;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.function.Function;
 
@@ -41,9 +41,9 @@ public interface Lettered {
 
     Screen createTextGUI();
 
-    default boolean openTextGui(final Player player, final me.paulf.fairylights.server.connection.PlayerAction action, final Intersection intersection) {
-        if (action == me.paulf.fairylights.server.connection.PlayerAction.INTERACT && player.isSecondaryUseActive()) {
-            Minecraft.getInstance().setScreen(this.createTextGUI());
+    default boolean openTextGui(final PlayerEntity player, final PlayerAction action, final Intersection intersection) {
+        if (action == PlayerAction.INTERACT && player.shouldCancelInteraction()) {
+            MinecraftClient.getInstance().setScreen(this.createTextGUI());
             return false;
         }
         return true;

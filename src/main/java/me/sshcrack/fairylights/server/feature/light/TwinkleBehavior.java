@@ -38,7 +38,7 @@ public class TwinkleBehavior implements BrightnessLightBehavior {
     }
 
     public static boolean exists(final ItemStack stack) {
-        final NbtCompound tag = stack.getTag();
+        final NbtCompound tag = stack.getNbt();
         return tag != null && tag.getBoolean("twinkle");
     }
 }

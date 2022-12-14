@@ -34,7 +34,7 @@ public abstract class ConnectionRenderer<C extends Connection> {
         if (currCat != null && prevCat != null) {
             final Curve cat = prevCat.lerp(currCat, delta);
             final Curve.SegmentIterator it = cat.iterator();
-            final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.buffer(source, RenderLayer::getEntityCutout);
+            final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.getVertexConsumer(source, RenderLayer::getEntityCutout);
             final int color = this.getWireColor(conn);
             final float r = ((color >> 16) & 0xFF) / 255.0F;
             final float g = ((color >> 8) & 0xFF) / 255.0F;

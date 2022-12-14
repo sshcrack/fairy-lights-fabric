@@ -11,7 +11,7 @@ import me.sshcrack.fairylights.server.connection.ConnectionType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
@@ -86,8 +86,8 @@ public abstract class ConnectionItem extends Item {
     private boolean isConnectionInOtherHand(final Level world, final Player user, final ItemStack stack) {
         final Fastener<?> attacher = user.getCapability(CapabilityHandler.FASTENER_CAP).orElseThrow(IllegalStateException::new);
         return attacher.getFirstConnection().filter(connection -> {
-            final CompoundTag nbt = connection.serializeLogic();
-            return nbt.isEmpty() ? stack.hasTag() : !NbtUtils.compareNbt(nbt, stack.getTag(), true);
+            final NbtCompound nbt = connection.serializeLogic();
+            return nbt.isEmpty() ? stack.hasTag() : !NbtUtils.compareNbt(nbt, stack.getNbt(), true);
         }).isPresent();
     }
 
@@ -132,8 +132,8 @@ public abstract class ConnectionItem extends Item {
                     playSound = false;
                 }
             } else {
-                final CompoundTag data = stack.getTag();
-                fastener.connect(world, attacher, this.getConnectionType(), data == null ? new CompoundTag() : data, false);
+                final NbtCompound data = stack.getNbt();
+                fastener.connect(world, attacher, this.getConnectionType(), data == null ? new NbtCompound() : data, false);
             }
             if (playSound) {
                 final Vec3 pos = fastener.getConnectionPoint();

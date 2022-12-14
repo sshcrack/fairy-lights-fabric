@@ -1,6 +1,10 @@
 package me.sshcrack.fairylights.server.item;
 
 import me.sshcrack.fairylights.server.feature.light.LightBehavior;
+import me.sshcrack.fairylights.util.EmptyProvider;
+import me.sshcrack.fairylights.util.SimpleProvider;
+import me.sshcrack.fairylights.util.forge.capabilities.Capability;
+import me.sshcrack.fairylights.util.forge.capabilities.ICapabilityProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Box;
 

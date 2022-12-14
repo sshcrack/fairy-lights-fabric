@@ -1,12 +1,12 @@
 package me.sshcrack.fairylights.server.connection;
 
-import me.paulf.fairylights.server.fastener.Fastener;
-import net.minecraft.world.level.Level;
+import me.sshcrack.fairylights.server.fastener.Fastener;
+import net.minecraft.world.World;
 
 import java.util.UUID;
 
-public final class GarlandVineConnection extends me.paulf.fairylights.server.connection.Connection {
-    public GarlandVineConnection(final ConnectionType<? extends GarlandVineConnection> type, final Level world, final Fastener<?> fastener, final UUID uuid) {
+public final class GarlandVineConnection extends Connection {
+    public GarlandVineConnection(final ConnectionType<? extends GarlandVineConnection> type, final World world, final Fastener<?> fastener, final UUID uuid) {
         super(type, world, fastener, uuid);
     }
 

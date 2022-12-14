@@ -1,14 +1,13 @@
 package me.sshcrack.fairylights.server.feature.light;
 
-import me.paulf.fairylights.util.FLMth;
-import net.minecraft.Util;
+import me.sshcrack.fairylights.util.FLMth;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public class ColorChangingBehavior implements ColorLightBehavior {
     private final float[] red;
@@ -44,9 +43,9 @@ public class ColorChangingBehavior implements ColorLightBehavior {
     }
 
     private float get(final float[] values, final float delta) {
-        final float p = this.powered ? FLMth.mod(Util.getMillis() * (20.0F / 1000.0F) * this.rate, values.length) : 0.0F;
+        final float p = this.powered ? FLMth.mod(Util.getMeasuringTimeMs() * (20.0F / 1000.0F) * this.rate, values.length) : 0.0F;
         final int i = (int) p;
-        return Mth.lerp(p - i, values[i % values.length], values[(i + 1) % values.length]);
+        return MathHelper.lerp(p - i, values[i % values.length], values[(i + 1) % values.length]);
     }
 
     @Override
@@ -55,15 +54,15 @@ public class ColorChangingBehavior implements ColorLightBehavior {
     }
 
     @Override
-    public void tick(final World world, final Vec3 origin, final Light<?> light) {
+    public void tick(final World world, final Vec3d origin, final Light<?> light) {
     }
 
     public static ColorLightBehavior create(final ItemStack stack) {
-        final NbtCompound tag = stack.getTag();
+        final NbtCompound tag = stack.getNbt();
         if (tag == null) {
             return new FixedColorBehavior(1.0F, 1.0F, 1.0F);
         }
-        final ListTag list = tag.getList("colors", Tag.TAG_INT);
+        final NbtList list = tag.getList("colors", NbtCompound.INT_TYPE);
         final float[] red = new float[list.size()];
         final float[] green = new float[list.size()];
         final float[] blue = new float[list.size()];
@@ -77,18 +76,18 @@ public class ColorChangingBehavior implements ColorLightBehavior {
     }
 
     public static int animate(final ItemStack stack) {
-        final NbtCompound tag = stack.getTag();
+        final NbtCompound tag = stack.getNbt();
         if (tag == null) {
             return 0xFFFFFF;
         }
-        final ListTag list = tag.getList("colors", Tag.TAG_INT);
+        final NbtList list = tag.getList("colors", NbtCompound.INT_TYPE);
         if (list.isEmpty()) {
             return 0xFFFFFF;
         }
         if (list.size() == 1) {
             return list.getInt(0);
         }
-        final float p = FLMth.mod(Util.getMillis() * (20.0F / 1000.0F) * (list.size() / 960.0F), list.size());
+        final float p = FLMth.mod(Util.getMeasuringTimeMs() * (20.0F / 1000.0F) * (list.size() / 960.0F), list.size());
         final int i = (int) p;
         final int c0 = list.getInt(i % list.size());
         final float r0 = (c0 >> 16 & 0xFF) / 255.0F;
@@ -98,13 +97,13 @@ public class ColorChangingBehavior implements ColorLightBehavior {
         final float r1 = (c1 >> 16 & 0xFF) / 255.0F;
         final float g1 = (c1 >> 8 & 0xFF) / 255.0F;
         final float b1 = (c1 & 0xFF) / 255.0F;
-        return (int) (Mth.lerp(p - i, r0, r1) * 255.0F) << 16 |
-            (int) (Mth.lerp(p - i, g0, g1) * 255.0F) << 8 |
-            (int) (Mth.lerp(p - i, b0, b1) * 255.0F);
+        return (int) (MathHelper.lerp(p - i, r0, r1) * 255.0F) << 16 |
+            (int) (MathHelper.lerp(p - i, g0, g1) * 255.0F) << 8 |
+            (int) (MathHelper.lerp(p - i, b0, b1) * 255.0F);
     }
 
     public static boolean exists(final ItemStack stack) {
-        final NbtCompound tag = stack.getTag();
-        return tag != null && tag.contains("colors", Tag.TAG_LIST);
+        final NbtCompound tag = stack.getNbt();
+        return tag != null && tag.contains("colors", NbtCompound.LIST_TYPE);
     }
 }

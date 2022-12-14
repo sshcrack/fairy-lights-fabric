@@ -13,7 +13,7 @@ public class BowModel extends Model {
         this.root = root;
     }
 
-    public static TexturedModelData getLayer() {
+    public static TexturedModelData createLayer() {
         ModelData mesh = new ModelData();
         ModelPartData root = mesh.getRoot().addChild("root", ModelPartBuilder.create()
             .uv(6, 72)

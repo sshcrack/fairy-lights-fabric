@@ -2,14 +2,12 @@ package me.sshcrack.fairylights.client;
 
 import com.google.common.collect.ImmutableList;
 import me.sshcrack.fairylights.FairyLightsMod;
-import me.sshcrack.fairylights.client.renderer.block.entity.FastenerBlockEntityRenderer;
-import me.sshcrack.fairylights.client.renderer.block.entity.LetterBuntingRenderer;
-import me.sshcrack.fairylights.client.renderer.block.entity.LightBlockEntityRenderer;
-import me.sshcrack.fairylights.client.renderer.block.entity.PennantBuntingRenderer;
+import me.sshcrack.fairylights.client.model.light.*;
+import me.sshcrack.fairylights.client.renderer.block.entity.*;
 import me.sshcrack.fairylights.client.renderer.entity.FenceFastenerRenderer;
+import me.sshcrack.fairylights.server.ServerProxy;
 import me.sshcrack.fairylights.server.block.entity.FLBlockEntities;
 import me.sshcrack.fairylights.server.item.FLItems;
-import net.minecraft.block.Material;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.render.RenderLayer;
@@ -18,16 +16,17 @@ import net.minecraft.client.render.VertexFormatElement;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 
 public final class ClientProxy extends ServerProxy {
     @SuppressWarnings("deprecation")
-    public static final Material SOLID_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, new Identifier(FairyLightsMod.ModID, "entity/connections"));
+    public static final SpriteIdentifier SOLID_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(FairyLightsMod.ModID, "entity/connections"));
 
     @SuppressWarnings("deprecation")
-    public static final Material TRANSLUCENT_TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, new Identifier(FairyLightsMod.ModID, "entity/connections"));
+    public static final SpriteIdentifier TRANSLUCENT_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(FairyLightsMod.ModID, "entity/connections"));
 
     private final ImmutableList<Identifier> entityModels = new ImmutableList.Builder<Identifier>()
         .addAll(PennantBuntingRenderer.MODELS)
@@ -66,7 +65,7 @@ public final class ClientProxy extends ServerProxy {
             }
         });
         modBus.addListener(this::setup);
-        modBus.addListener(this::setupLayerDefinitions);
+        modBus.addListener(this::setupModelLayers);
         modBus.addListener(this::setupColors);
         modBus.addListener(this::setupModels);
     }
@@ -114,7 +113,7 @@ public final class ClientProxy extends ServerProxy {
         LogManager.getLogger().debug("waldo {}", bob);*/
     }
 
-    private void setupLayerDefinitions(final EntityRenderersEvent.RegisterLayerDefinitions event) {
+    private void setupModelLayers(final EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(FLModelLayers.BOW, BowModel::createLayer);
         event.registerLayerDefinition(FLModelLayers.GARLAND_RINGS, GarlandVineRenderer.RingsModel::createLayer);
         event.registerLayerDefinition(FLModelLayers.TINSEL_STRIP, GarlandTinselRenderer.StripModel::createLayer);
@@ -182,15 +181,15 @@ public final class ClientProxy extends ServerProxy {
             FLItems.METEOR_LIGHT.get()
         );
         event.register((stack, index) -> {
-            final CompoundTag tag = stack.getTag();
+            final NbtCompound tag = stack.getNbt();
             if (index == 0) {
                 if (tag != null) {
                     return HangingLightsConnectionItem.getString(tag).getColor();
                 }
-                return StringTypes.BLACK_STRING.get().getColor();
+                return StringTypes.BLACK_STRING.getColor();
             }
             if (tag != null) {
-                final ListTag tagList = tag.getList("pattern", Tag.TAG_COMPOUND);
+                final NbtList tagList = tag.getList("pattern", Tag.TAG_COMPOUND);
                 if (tagList.size() > 0) {
                     final ItemStack item = ItemStack.of(tagList.getCompound((index - 1) % tagList.size()));
                     if (ColorChangingBehavior.exists(item)) {
@@ -212,9 +211,9 @@ public final class ClientProxy extends ServerProxy {
             if (index == 0) {
                 return 0xFFFFFFFF;
             }
-            final CompoundTag tag = stack.getTag();
+            final NbtCompound tag = stack.getNbt();
             if (tag != null) {
-                final ListTag tagList = tag.getList("pattern", Tag.TAG_COMPOUND);
+                final NbtList tagList = tag.getList("pattern", Tag.TAG_COMPOUND);
                 if (tagList.size() > 0) {
                     final ItemStack light = ItemStack.of(tagList.getCompound((index - 1) % tagList.size()));
                     return DyeableItem.getColor(light);
@@ -227,7 +226,7 @@ public final class ClientProxy extends ServerProxy {
         event.register(ClientProxy::secondLayerColor, FLItems.SWALLOWTAIL_PENNANT.get());
         event.register(ClientProxy::secondLayerColor, FLItems.SQUARE_PENNANT.get());
         event.register((stack, index) -> {
-            final CompoundTag tag = stack.getTag();
+            final NbtCompound tag = stack.getNbt();
             if (index > 0 && tag != null) {
                 final StyledString str = StyledString.deserialize(tag.getCompound("text"));
                 if (str.length() > 0) {

@@ -5,6 +5,8 @@ import me.sshcrack.fairylights.client.gui.component.ColorButton;
 import me.sshcrack.fairylights.client.gui.component.PaletteButton;
 import me.sshcrack.fairylights.client.gui.component.StyledTextFieldWidget;
 import me.sshcrack.fairylights.client.gui.component.ToggleButton;
+import me.sshcrack.fairylights.server.connection.Connection;
+import me.sshcrack.fairylights.server.connection.Lettered;
 import me.sshcrack.fairylights.util.styledstring.StyledString;
 import me.sshcrack.fairylights.util.styledstring.StylingPresence;
 import net.minecraft.client.gui.screen.Screen;
@@ -65,7 +67,7 @@ public final class EditLetteredConnectionScreen<C extends Connection & Lettered>
         this.italicBtn = this.addDrawable(new ToggleButton(buttonX += bInc, buttonY, 60, 0, Text.empty(), b -> this.updateStyleButton(Formatting.ITALIC, this.italicBtn)));
         this.underlineBtn = this.addDrawable(new ToggleButton(buttonX += bInc, buttonY, 80, 0, Text.empty(), b -> this.updateStyleButton(Formatting.UNDERLINE, this.underlineBtn)));
         this.strikethroughBtn = this.addDrawable(new ToggleButton(buttonX += bInc, buttonY, 100, 0, Text.empty(), b -> this.updateStyleButton(Formatting.STRIKETHROUGH, this.strikethroughBtn)));
-        this.textField = new StyledTextFieldWidget(this.font, this.colorBtn, this.boldBtn, this.italicBtn, this.underlineBtn, this.strikethroughBtn, textFieldX, textFieldY, 300, 20, Text.translatable("fairylights.letteredText"));
+        this.textField = new StyledTextFieldWidget(this.textRenderer, this.colorBtn, this.boldBtn, this.italicBtn, this.underlineBtn, this.strikethroughBtn, textFieldX, textFieldY, 300, 20, Text.translatable("fairylights.letteredText"));
         this.textField.setValue(this.connection.getText());
         this.textField.setCaretStart();
         this.textField.setIsBlurable(false);

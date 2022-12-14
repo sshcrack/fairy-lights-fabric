@@ -1,30 +1,29 @@
 package me.sshcrack.fairylights.client.renderer.block.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
-import me.paulf.fairylights.client.ClientProxy;
-import me.paulf.fairylights.client.FLModelLayers;
-import me.paulf.fairylights.client.model.light.BowModel;
-import me.paulf.fairylights.server.connection.*;
-import me.paulf.fairylights.server.fastener.Fastener;
-import me.paulf.fairylights.server.fastener.FenceFastener;
+import me.sshcrack.fairylights.client.ClientProxy;
+import me.sshcrack.fairylights.client.FLModelLayers;
 import me.sshcrack.fairylights.client.model.light.BowModel;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.geom.EntityModelLayer;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.VertexConsumerProvider;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.FenceBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.Tags;
+import me.sshcrack.fairylights.server.connection.*;
+import me.sshcrack.fairylights.server.fastener.Fastener;
+import me.sshcrack.fairylights.server.fastener.FenceFastener;
+import me.sshcrack.fairylights.util.crafting.OtherTags;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.FenceBlock;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 import java.util.function.Function;
 
@@ -45,7 +44,7 @@ public class FastenerRenderer {
         this.bow = new BowModel(baker.apply(FLModelLayers.BOW));
     }
 
-    public void render(final Fastener<?> fastener, final float delta, final PoseStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay) {
+    public void render(final Fastener<?> fastener, final float delta, final MatrixStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay) {
         boolean renderBow = true;
         for (final Connection conn : fastener.getAllConnections()) {
             if (conn.getFastener() == fastener) {
@@ -58,22 +57,22 @@ public class FastenerRenderer {
         }
     }
 
-    private boolean renderBow(Fastener<?> fastener, PoseStack matrix, VertexConsumerProvider source, int packedLight, int packedOverlay) {
+    private boolean renderBow(Fastener<?> fastener, MatrixStack matrix, VertexConsumerProvider source, int packedLight, int packedOverlay) {
         if (fastener instanceof FenceFastener) {
-            final Level world = fastener.getWorld();
+            final World world = fastener.getWorld();
             if (world == null) {
                 return false;
             }
             final BlockState state = world.getBlockState(fastener.getPos());
-            if (!state.is(Tags.Blocks.FENCES)) {
+            if (!state.isIn(OtherTags.FENCES)) {
                 return false;
             }
-            final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.buffer(source, RenderType::entityCutout);
+            final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.buffer(source, RenderLayer::getEntityCutout);
             final float offset = -1.5F / 16.0F;
-            final boolean north = state.getValue(FenceBlock.NORTH);
-            final boolean east = state.getValue(FenceBlock.EAST);
-            final boolean south = state.getValue(FenceBlock.SOUTH);
-            final boolean west = state.getValue(FenceBlock.WEST);
+            final boolean north = state.get(FenceBlock.NORTH);
+            final boolean east = state.get(FenceBlock.EAST);
+            final boolean south = state.get(FenceBlock.SOUTH);
+            final boolean west = state.get(FenceBlock.WEST);
             boolean tryDirX = true;
             boolean bow = false;
             if (!north && (east || west)) {
@@ -98,24 +97,24 @@ public class FastenerRenderer {
             }
             return bow;
         } else if (fastener.getFacing().getAxis() != Direction.Axis.Y) {
-            final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.buffer(source, RenderType::entityCutout);
+            final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.getVertexConsumer(source, RenderLayer::getEntityCutout);
             this.bow(matrix, fastener.getFacing(), 0.0F, buf, packedLight, packedOverlay);
             return true;
         }
         return false;
     }
 
-    private void bow(PoseStack matrix, Direction dir, float offset, VertexConsumer buf, int packedLight, int packedOverlay) {
-        matrix.pushPose();
-        matrix.mulPose(Vector3f.YP.rotationDegrees(180.0F - dir.toYRot()));
+    private void bow(MatrixStack matrix, Direction dir, float offset, VertexConsumer buf, int packedLight, int packedOverlay) {
+        matrix.push();
+        matrix.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - dir.asRotation()));
         if (offset != 0.0F) {
             matrix.translate(0.0D, 0.0D, offset);
         }
-        this.bow.renderToBuffer(matrix, buf, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
-        matrix.popPose();
+        this.bow.render(matrix, buf, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+        matrix.pop();
     }
 
-    private void renderConnection(final float delta, final PoseStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay, final Connection conn) {
+    private void renderConnection(final float delta, final MatrixStack matrix, final VertexConsumerProvider source, final int packedLight, final int packedOverlay, final Connection conn) {
         if (conn instanceof HangingLightsConnection) {
             this.hangingLights.render((HangingLightsConnection) conn, delta, matrix, source, packedLight, packedOverlay);
         } else if (conn instanceof GarlandVineConnection) {
@@ -129,25 +128,25 @@ public class FastenerRenderer {
         }
     }
 
-    public static void renderBakedModel(final Identifier path, final PoseStack matrix, final VertexConsumer buf, final float r, final float g, final float b, final int packedLight, final int packedOverlay) {
-        renderBakedModel(Minecraft.getInstance().getModelManager().getModel(path), matrix, buf, r, g, b, packedLight, packedOverlay);
+    public static void renderBakedModel(final ModelIdentifier path, final MatrixStack matrix, final VertexConsumer buf, final float r, final float g, final float b, final int packedLight, final int packedOverlay) {
+        renderBakedModel(MinecraftClient.getInstance().getBakedModelManager().getModel(path), matrix, buf, r, g, b, packedLight, packedOverlay);
     }
 
-    public static void renderBakedModel(final BakedModel model, final PoseStack matrix, final VertexConsumer buf, final float r, final float g, final float b, final int packedLight, final int packedOverlay) {
-        renderBakedModel(model, ItemTransforms.TransformType.FIXED, matrix, buf, r, g, b, packedLight, packedOverlay);
+    public static void renderBakedModel(final BakedModel model, final MatrixStack matrix, final VertexConsumer buf, final float r, final float g, final float b, final int packedLight, final int packedOverlay) {
+        renderBakedModel(model, ModelTransformation.Mode.FIXED, matrix, buf, r, g, b, packedLight, packedOverlay);
     }
 
     @SuppressWarnings("deprecation")
     // (refusing to use handlePerspective due to IForgeTransformationMatrix#push superfluous undocumented MatrixStack#push)
-    public static void renderBakedModel(final BakedModel model, final ItemTransforms.TransformType type, final PoseStack matrix, final VertexConsumer buf, final float r, final float g, final float b, final int packedLight, final int packedOverlay) {
-        model.getTransforms().getTransform(type).apply(false, matrix);
+    public static void renderBakedModel(final BakedModel model, final ModelTransformation.Mode type, final MatrixStack matrix, final VertexConsumer buf, final float r, final float g, final float b, final int packedLight, final int packedOverlay) {
+        model.getTransformation().getTransformation(type).apply(false, matrix);
         for (final Direction side : Direction.values()) {
-            for (final BakedQuad quad : model.getQuads(null, side, RandomSource.create(42L))) {
-                buf.putBulkData(matrix.last(), quad, r, g, b, packedLight, packedOverlay);
+            for (final BakedQuad quad : model.getQuads(null, side, Random.create(42L))) {
+                buf.quad(matrix.peek(), quad, r, g, b, packedLight, packedOverlay);
             }
         }
-        for (final BakedQuad quad : model.getQuads(null, null, RandomSource.create(42L))) {
-            buf.putBulkData(matrix.last(), quad, r, g, b, packedLight, packedOverlay);
+        for (final BakedQuad quad : model.getQuads(null, null, Random.create(42L))) {
+            buf.quad(matrix.peek(), quad, r, g, b, packedLight, packedOverlay);
         }
     }
 }

@@ -85,7 +85,7 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
         final NbtCompound tag = new NbtCompound();
         tag.putUUID("UUID", this.uuid);
         if (this.pos != null) {
-            final ListTag pos = new ListTag();
+            final NbtList pos = new NbtList();
             pos.add(DoubleTag.valueOf(this.pos.x));
             pos.add(DoubleTag.valueOf(this.pos.y));
             pos.add(DoubleTag.valueOf(this.pos.z));
@@ -98,7 +98,7 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
     public void deserialize(final NbtCompound tag) {
         this.uuid = tag.getUUID("UUID");
         if (tag.contains("Pos", Tag.TAG_LIST)) {
-            final ListTag pos = tag.getList("Pos", Tag.TAG_DOUBLE);
+            final NbtList pos = tag.getList("Pos", Tag.TAG_DOUBLE);
             this.pos = new Vec3(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2));
         } else {
             this.pos = null;

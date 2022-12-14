@@ -1,6 +1,7 @@
 package me.sshcrack.fairylights.server.block;
 
 import me.sshcrack.fairylights.server.block.entity.LightBlockEntity;
+import me.sshcrack.fairylights.server.item.DyeableItem;
 import me.sshcrack.fairylights.server.item.LightVariant;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -11,20 +12,27 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,7 +49,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
         super(properties);
         this.variant = variant;
         final Box bb = this.variant.getBounds();
-        final double w = Math.max(bb.getXsize(), bb.getZsize());
+        final double w = Math.max(bb.getXLength(), bb.getZLength());
         final double w0 = 0.5D - w * 0.5D;
         final double w1 = 0.5D + w * 0.5D;
         if (variant.isOrientable()) {
@@ -54,19 +62,19 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
         } else {
             final double t = 0.125D;
             final double u = 11.0D / 16.0D;
-            this.floorShape = clampBox(w0, 0.0D, w0, w1, bb.getYsize() - this.variant.getFloorOffset(), w1);
+            this.floorShape = clampBox(w0, 0.0D, w0, w1, bb.getYLength() - this.variant.getFloorOffset(), w1);
             this.eastWallShape = clampBox(w0 - t, u + bb.minY, w0, w1 - t, u + bb.maxY, w1);
             this.westWallShape = clampBox(w0 + t, u + bb.minY, w0, w1 + t, u + bb.maxY, w1);
             this.southWallShape = clampBox(w0, u + bb.minY, w0 - t, w1, u + bb.maxY, w1 - t);
             this.northWallShape = clampBox(w0, u  + bb.minY, w0 + t, w1, u + bb.maxY, w1 + t);
             this.ceilingShape = clampBox(w0, 1.0D + bb.minY - 4.0D / 16.0D, w0, w1, 1.0D, w1);
         }
-        this.setDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FACE, AttachFace.WALL).setValue(LIT, true));
+        this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH).with(FACE, WallMountLocation.WALL).with(LIT, true));
     }
 
     private static VoxelShape clampBox(double x0, double y0, double z0, double x1, double y1, double z1) {
-        return Shapes.box(Mth.clamp(x0, 0.0D, 1.0D), Mth.clamp(y0, 0.0D, 1.0D), Mth.clamp(z0, 0.0D, 1.0D),
-            Mth.clamp(x1, 0.0D, 1.0D), Mth.clamp(y1, 0.0D, 1.0D), Mth.clamp(z1, 0.0D, 1.0D));
+        return VoxelShapes.cuboid(MathHelper.clamp(x0, 0.0D, 1.0D), MathHelper.clamp(y0, 0.0D, 1.0D), MathHelper.clamp(z0, 0.0D, 1.0D),
+                MathHelper.clamp(x1, 0.0D, 1.0D), MathHelper.clamp(y1, 0.0D, 1.0D), MathHelper.clamp(z1, 0.0D, 1.0D));
     }
 
     public LightVariant<?> getVariant() {
@@ -88,8 +96,8 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
             if (anchorState.isIn(BlockTags.LEAVES)) {
                 return true;
             }
-            final VoxelShape shape = anchorState.getBlockSupportShape(world, anchorPos);
-            return Block.isFaceFull(shape, facing);
+            final VoxelShape shape = anchorState.getSidesShape(world, anchorPos);
+            return Block.isFaceFullSquare(shape, facing);
         }
         final Direction facing = value == WallMountLocation.FLOOR ? Direction.DOWN : Direction.UP;
         final BlockPos anchorPos = pos.offset(facing);
@@ -97,8 +105,8 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
         if (anchorState.isIn(BlockTags.LEAVES)) {
             return true;
         }
-        final VoxelShape shape = anchorState.getBlockSupportShape(world, anchorPos);
-        return !Shapes.joinIsNotEmpty(shape.getFaceShape(facing.getOpposite()), MIN_ANCHOR_SHAPE, BooleanOp.ONLY_SECOND);
+        final VoxelShape shape = anchorState.getSidesShape(world, anchorPos);
+        return !VoxelShapes.matchesAnywhere(shape.getFace(facing.getOpposite()), MIN_ANCHOR_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }
 
     @Nullable
@@ -109,13 +117,13 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
             if (dir.getAxis() == Direction.Axis.Y) {
                 state = this.getDefaultState()
                     .with(FACE, dir == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)
-                    .with(FACING, context.getHorizontalDirection().getOpposite());
+                    .with(FACING, context.getPlayerFacing().getOpposite());
             } else {
                 state = this.getDefaultState()
-                    .setValue(FACE, WallMountLocation.WALL)
-                    .setValue(FACING, dir.getOpposite());
+                    .with(FACE, WallMountLocation.WALL)
+                    .with(FACING, dir.getOpposite());
             }
-            if (state.canPlaceAt(context.getWorld(), context.getClickedPos())) {
+            if (state.canPlaceAt(context.getWorld(), context.getBlockPos())) {
                 return state;
             }
         }
@@ -135,7 +143,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
 
     @SuppressWarnings("deprecation")
     @Override
-    public List<ItemStack> dropStack(final BlockState state, final LootContext.Builder builder) {
+    public List<ItemStack> getDroppedStacks(final BlockState state, final LootContext.Builder builder) {
         final BlockEntity entity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
         if (entity instanceof LightBlockEntity) {
             return Collections.singletonList(((LightBlockEntity) entity).getLight().getItem().copy());
@@ -144,19 +152,18 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
     }
 
     @Override
-    public InteractionResult use(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit) {
+    public ActionResult onUse(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult hit) {
         final BlockEntity entity = world.getBlockEntity(pos);
         if (entity instanceof LightBlockEntity) {
             ((LightBlockEntity) entity).interact(world, pos, state, player, hand, hit);
-            return InteractionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
-        return super.use(state, world, pos, player, hand, hit);
+        return super.onUse(state, world, pos, player, hand, hit);
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
-    public void animateTick(final BlockState state, final World world, final BlockPos pos, final Random rng) {
-        super.animateTick(state, world, pos, rng);
+    public void randomDisplayTick(final BlockState state, final World world, final BlockPos pos, final Random rng) {
+        super.randomDisplayTick(state, world, pos, rng);
         final BlockEntity entity = world.getBlockEntity(pos);
         if (entity instanceof LightBlockEntity) {
             ((LightBlockEntity) entity).animateTick();
@@ -164,13 +171,13 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
     }
 
     @Override
-    public VoxelShape getShape(final BlockState state, final BlockGetter world, final BlockPos pos, final CollisionContext context) {
-        switch (state.getValue(FACE)) {
+    public VoxelShape getOutlineShape(final BlockState state, final BlockView world, final BlockPos pos, final ShapeContext context) {
+        switch (state.get(FACE)) {
             default:
             case FLOOR:
                 return this.floorShape;
             case WALL:
-                switch (state.getValue(FACING)) {
+                switch (state.get(FACING)) {
                     default:
                     case EAST:
                         return this.eastWallShape;
@@ -187,7 +194,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
     }
 
     @Override
-    public ItemStack getCloneItemStack(final BlockState state, final HitResult target, final BlockGetter world, final BlockPos pos, final Player player) {
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         final BlockEntity entity = world.getBlockEntity(pos);
         if (entity instanceof LightBlockEntity) {
             return ((LightBlockEntity) entity).getLight().getItem().copy();
@@ -198,7 +205,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
     }
 
     @Override
-    protected void createBlockStateDefinition(final StateDefinition.Builder<Block, BlockState> builder) {
+    protected void appendProperties(final StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACE, FACING, LIT);
     }
 }

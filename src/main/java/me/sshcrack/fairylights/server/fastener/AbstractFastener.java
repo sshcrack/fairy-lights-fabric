@@ -16,7 +16,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -257,7 +257,7 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
     @Override
     public NbtCompound serializeNBT() {
         final NbtCompound compound = new NbtCompound();
-        final ListTag outgoing = new ListTag();
+        final NbtList outgoing = new NbtList();
         for (final Entry<UUID, Connection> connectionEntry : this.outgoing.entrySet()) {
             final UUID uuid = connectionEntry.getKey();
             final Connection connection = connectionEntry.getValue();
@@ -268,7 +268,7 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
             outgoing.add(connectionCompound);
         }
         compound.put("outgoing", outgoing);
-        final ListTag incoming = new ListTag();
+        final NbtList incoming = new NbtList();
         for (final Entry<UUID, Incoming> e : this.incoming.entrySet()) {
             final NbtCompound tag = new NbtCompound();
             tag.putUUID("uuid", e.getKey());
@@ -281,7 +281,7 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
 
     @Override
     public void deserializeNBT(final NbtCompound compound) {
-        final ListTag listConnections = compound.getList("outgoing", Tag.TAG_COMPOUND);
+        final NbtList listConnections = compound.getList("outgoing", Tag.TAG_COMPOUND);
         final List<UUID> nbtUUIDs = new ArrayList<>();
         for (int i = 0; i < listConnections.size(); i++) {
             final NbtCompound connectionCompound = listConnections.getCompound(i);
@@ -313,7 +313,7 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
             }
         }
         this.incoming.clear();
-        final ListTag incoming = compound.getList("incoming", Tag.TAG_COMPOUND);
+        final NbtList incoming = compound.getList("incoming", Tag.TAG_COMPOUND);
         for (int i = 0; i < incoming.size(); i++) {
             final NbtCompound incomingNbt = incoming.getCompound(i);
             final UUID uuid = incomingNbt.getUUID("uuid");

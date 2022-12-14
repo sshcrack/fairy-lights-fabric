@@ -1,11 +1,19 @@
 package me.sshcrack.fairylights;
 
 import me.sshcrack.fairylights.server.item.FLItems;
+import me.sshcrack.fairylights.server.string.StringType;
+import me.sshcrack.fairylights.server.string.StringTypes;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.SimpleRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +27,11 @@ public class FairyLightsMod implements ModInitializer {
             .create(new Identifier(ModID, "main_group"))
             .icon(() -> new ItemStack(FLItems.HANGING_LIGHTS))
             .build();
+
+    public static final Identifier STRING_TYPE_ID = new Identifier(ModID, "string_type");
+    public static final SimpleRegistry<StringType> STRING_TYPE = FabricRegistryBuilder.createSimple(StringType.class, FairyLightsMod.STRING_TYPE_ID).buildAndRegister();
+
+
 
     @Override
     public void onInitialize() {

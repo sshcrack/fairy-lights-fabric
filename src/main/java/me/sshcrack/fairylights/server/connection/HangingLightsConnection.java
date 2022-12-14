@@ -1,40 +1,38 @@
 package me.sshcrack.fairylights.server.connection;
 
-import me.paulf.fairylights.server.block.FLBlocks;
-import me.paulf.fairylights.server.fastener.Fastener;
-import me.paulf.fairylights.server.feature.FeatureType;
-import me.paulf.fairylights.server.feature.light.Light;
-import me.paulf.fairylights.server.feature.light.LightBehavior;
-import me.paulf.fairylights.server.item.HangingLightsConnectionItem;
-import LightVariant;
-import me.paulf.fairylights.server.item.SimpleLightVariant;
-import me.paulf.fairylights.server.item.crafting.FLCraftingRecipes;
-import me.paulf.fairylights.server.jingle.Jingle;
-import me.paulf.fairylights.server.jingle.JinglePlayer;
-import me.paulf.fairylights.server.sound.FLSounds;
-import me.paulf.fairylights.server.string.StringType;
-import me.paulf.fairylights.server.string.StringTypes;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LightBlock;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.ItemHandlerHelper;
+import me.sshcrack.fairylights.server.block.FLBlocks;
+import me.sshcrack.fairylights.server.fastener.Fastener;
+import me.sshcrack.fairylights.server.feature.FeatureType;
+import me.sshcrack.fairylights.server.feature.light.Light;
+import me.sshcrack.fairylights.server.feature.light.LightBehavior;
+import me.sshcrack.fairylights.server.item.HangingLightsConnectionItem;
+import me.sshcrack.fairylights.server.item.LightVariant;
+import me.sshcrack.fairylights.server.item.SimpleLightVariant;
+import me.sshcrack.fairylights.server.item.crafting.FLCraftingRecipes;
+import me.sshcrack.fairylights.server.jingle.Jingle;
+import me.sshcrack.fairylights.server.jingle.JinglePlayer;
+import me.sshcrack.fairylights.server.sound.FLSounds;
+import me.sshcrack.fairylights.server.string.StringType;
+import me.sshcrack.fairylights.server.string.StringTypes;
+import me.sshcrack.fairylights.util.forge.items.ItemHandlerHelper;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.LightBlock;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.LightType;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
-public final class HangingLightsConnection extends me.paulf.fairylights.server.connection.HangingFeatureConnection<Light<?>> {
+public final class HangingLightsConnection extends HangingFeatureConnection<Light<?>> {
     private static final int MAX_LIGHT = 15;
 
     private static final int LIGHT_UPDATE_WAIT = 400;
@@ -59,9 +57,9 @@ public final class HangingLightsConnection extends me.paulf.fairylights.server.c
 
     private int lightUpdateIndex;
 
-    public HangingLightsConnection(final ConnectionType<? extends HangingLightsConnection> type, final Level world, final Fastener<?> fastenerOrigin, final UUID uuid) {
+    public HangingLightsConnection(final ConnectionType<? extends HangingLightsConnection> type, final World world, final Fastener<?> fastenerOrigin, final UUID uuid) {
         super(type, world, fastenerOrigin, uuid);
-        this.string = StringTypes.BLACK_STRING.get();
+        this.string = StringTypes.BLACK_STRING;
         this.pattern = new ArrayList<>();
     }
 
@@ -79,16 +77,16 @@ public final class HangingLightsConnection extends me.paulf.fairylights.server.c
     }
 
     @Override
-    public boolean interact(final Player player, final Vec3 hit, final FeatureType featureType, final int feature, final ItemStack heldStack, final InteractionHand hand) {
-        if (featureType == FEATURE && heldStack.is(FLCraftingRecipes.LIGHTS)) {
+    public boolean interact(final PlayerEntity player, final Vec3d hit, final FeatureType featureType, final int feature, final ItemStack heldStack, final InteractionHand hand) {
+        if (featureType == FEATURE && heldStack.isIn(FLCraftingRecipes.LIGHTS)) {
             final int index = feature % this.pattern.size();
             final ItemStack light = this.pattern.get(index);
-            if (!ItemStack.matches(light, heldStack)) {
+            if (!ItemStack.areEqual(light, heldStack)) {
                 final ItemStack placed = heldStack.split(1);
                 this.pattern.set(index, placed);
                 ItemHandlerHelper.giveItemToPlayer(player, light);
                 this.computeCatenary();
-                this.world.playSound(null, hit.x, hit.y, hit.z, FLSounds.FEATURE_COLOR_CHANGE.get(), SoundSource.BLOCKS, 1, 1);
+                this.world.playSound(null, hit.x, hit.y, hit.z, FLSounds.FEATURE_COLOR_CHANGE, SoundCategory.BLOCKS, 1, 1);
                 return true;
             }
         }
@@ -99,20 +97,20 @@ public final class HangingLightsConnection extends me.paulf.fairylights.server.c
         final SoundEvent lightSnd;
         final float pitch;
         if (this.isOn) {
-            lightSnd = FLSounds.FEATURE_LIGHT_TURNON.get();
+            lightSnd = FLSounds.FEATURE_LIGHT_TURNON;
             pitch = 0.6F;
         } else {
-            lightSnd = FLSounds.FEATURE_LIGHT_TURNOFF.get();
+            lightSnd = FLSounds.FEATURE_LIGHT_TURNOFF;
             pitch = 0.5F;
         }
-        this.world.playSound(null, hit.x, hit.y, hit.z, lightSnd, SoundSource.BLOCKS, 1, pitch);
+        this.world.playSound(null, hit.x, hit.y, hit.z, lightSnd, SoundCategory.BLOCKS, 1, pitch);
         this.computeCatenary();
         return true;
     }
 
     @Override
     public void onUpdate() {
-        this.jinglePlayer.tick(this.world, this.fastener.getConnectionPoint(), this.features, this.world.isClientSide());
+        this.jinglePlayer.tick(this.world, this.fastener.getConnectionPoint(), this.features, this.world.isClient());
         final boolean playing = this.jinglePlayer.isPlaying();
         if (playing || this.wasPlaying) {
             this.updateNeighbors(this.fastener);
@@ -137,7 +135,7 @@ public final class HangingLightsConnection extends me.paulf.fairylights.server.c
     }
 
     private void updateNeighbors(final Fastener<?> fastener) {
-        this.world.updateNeighbourForOutputSignal(fastener.getPos(), FLBlocks.FASTENER.get());
+        this.world.updateNeighbors(fastener.getPos(), FLBlocks.FASTENER);
     }
 
     @Override
@@ -147,11 +145,11 @@ public final class HangingLightsConnection extends me.paulf.fairylights.server.c
 
     @Override
     protected boolean canReuse(final Light<?> feature, final int index) {
-        return ItemStack.matches(feature.getItem(), this.getPatternStack(index));
+        return ItemStack.areEqual(feature.getItem(), this.getPatternStack(index));
     }
 
     @Override
-    protected Light<?> createFeature(final int index, final Vec3 point, final float yaw, final float pitch) {
+    protected Light<?> createFeature(final int index, final Vec3d point, final float yaw, final float pitch) {
         final ItemStack lightData = this.getPatternStack(index);
         return this.createLight(index, point, yaw, pitch, lightData, LightVariant.get(lightData).orElse(SimpleLightVariant.FAIRY_LIGHT));
     }
@@ -170,7 +168,7 @@ public final class HangingLightsConnection extends me.paulf.fairylights.server.c
         }
     }
 
-    private <T extends LightBehavior> Light<T> createLight(final int index, final Vec3 point, final float yaw, final float pitch, final ItemStack stack, final LightVariant<T> variant) {
+    private <T extends LightBehavior> Light<T> createLight(final int index, final Vec3d point, final float yaw, final float pitch, final ItemStack stack, final LightVariant<T> variant) {
         return new Light<>(index, point, yaw, pitch, stack, variant, 0.125F);
     }
 
@@ -218,14 +216,14 @@ public final class HangingLightsConnection extends me.paulf.fairylights.server.c
     }
 
     private void removeLight(final BlockPos pos) {
-        if (this.world.getBlockState(pos).is(Blocks.LIGHT)) {
+        if (this.world.getBlockState(pos).isOf(Blocks.LIGHT)) {
             this.world.removeBlock(pos, false);
         }
     }
 
     private void setLight(final BlockPos pos) {
-        if (this.world.isLoaded(pos) && this.world.isEmptyBlock(pos) && this.world.getBrightness(LightLayer.BLOCK, pos) < MAX_LIGHT) {
-            this.world.setBlock(pos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, LightBlock.MAX_LEVEL), 2);
+        if (this.world.isChunkLoaded(pos) && this.world.isAir(pos) && this.world.getLightLevel(LightType.BLOCK, pos) < MAX_LIGHT) {
+            this.world.setBlockState(pos, Blocks.LIGHT.getDefaultState().with(LightBlock.LEVEL_15, LightBlock.field_33722), 2);
         }
     }
 
@@ -238,20 +236,20 @@ public final class HangingLightsConnection extends me.paulf.fairylights.server.c
     }
 
     @Override
-    public CompoundTag serialize() {
-        final CompoundTag compound = super.serialize();
+    public NbtCompound serialize() {
+        final NbtCompound compound = super.serialize();
         compound.put("jinglePlayer", this.jinglePlayer.serialize());
         compound.putBoolean("isOn", this.isOn);
-        final ListTag litBlocks = new ListTag();
+        final NbtList litBlocks = new NbtList();
         for (final BlockPos litBlock : this.litBlocks) {
-            litBlocks.add(NbtUtils.writeBlockPos(litBlock));
+            litBlocks.add(NbtHelper.fromBlockPos(litBlock));
         }
         compound.put("litBlocks", litBlocks);
         return compound;
     }
 
     @Override
-    public void deserialize(final CompoundTag compound) {
+    public void deserialize(final NbtCompound compound) {
         super.deserialize(compound);
         if (this.jinglePlayer == null) {
             this.jinglePlayer = new JinglePlayer();
@@ -261,32 +259,32 @@ public final class HangingLightsConnection extends me.paulf.fairylights.server.c
         }
         this.isOn = compound.getBoolean("isOn");
         this.litBlocks.clear();
-        final ListTag litBlocks = compound.getList("litBlocks", Tag.TAG_COMPOUND);
+        final NbtList litBlocks = compound.getList("litBlocks", NbtCompound.COMPOUND_TYPE);
         for (int i = 0; i < litBlocks.size(); i++) {
-            this.litBlocks.add(NbtUtils.readBlockPos(litBlocks.getCompound(i)));
+            this.litBlocks.add(NbtHelper.toBlockPos(litBlocks.getCompound(i)));
         }
     }
 
     @Override
-    public CompoundTag serializeLogic() {
-        final CompoundTag compound = super.serializeLogic();
+    public NbtCompound serializeLogic() {
+        final NbtCompound compound = super.serializeLogic();
         HangingLightsConnectionItem.setString(compound, this.string);
-        final ListTag tagList = new ListTag();
+        final NbtList tagList = new NbtList();
         for (final ItemStack light : this.pattern) {
-            tagList.add(light.save(new CompoundTag()));
+            tagList.add(light.save(new NbtCompound()));
         }
         compound.put("pattern", tagList);
         return compound;
     }
 
     @Override
-    public void deserializeLogic(final CompoundTag compound) {
+    public void deserializeLogic(final NbtCompound compound) {
         super.deserializeLogic(compound);
         this.string = HangingLightsConnectionItem.getString(compound);
-        final ListTag patternList = compound.getList("pattern", Tag.TAG_COMPOUND);
+        final NbtList patternList = compound.getList("pattern", Tag.TAG_COMPOUND);
         this.pattern = new ArrayList<>();
         for (int i = 0; i < patternList.size(); i++) {
-            final CompoundTag lightCompound = patternList.getCompound(i);
+            final NbtCompound lightCompound = patternList.getCompound(i);
             this.pattern.add(ItemStack.of(lightCompound));
         }
     }

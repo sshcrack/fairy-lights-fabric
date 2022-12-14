@@ -5,6 +5,8 @@ import me.sshcrack.fairylights.server.feature.light.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Box;
 
+import java.util.function.Function;
+
 public class SimpleLightVariant<T extends LightBehavior> implements LightVariant<T> {
     public static final LightVariant<StandardLightBehavior> FAIRY_LIGHT = new SimpleLightVariant<>(true, 1.0F, new Box(-0.138D, -0.138D, -0.138D, 0.138D, 0.138D, 0.138D), 0.044D, SimpleLightVariant::standardBehavior, true);
     public static final LightVariant<StandardLightBehavior> PAPER_LANTERN = new SimpleLightVariant<>(false, 1.0F, new Box(-0.250D, -0.906D, -0.250D, 0.250D, 0.091D, 0.250D), 0.000D, SimpleLightVariant::standardBehavior);
@@ -31,15 +33,15 @@ public class SimpleLightVariant<T extends LightBehavior> implements LightVariant
         }
         return new MeteorLightBehavior(color);
     });
-    public static final LightVariant<BrightnessLightBehavior> OIL_LANTERN = new SimpleLightVariant<>(false, 1.5F, new AABB(-0.219D, -0.656D, -0.188D, 0.219D, 0.091D, 0.188D), 0.000D, stack -> new TorchLightBehavior(0.13D));
-    public static final LightVariant<BrightnessLightBehavior> CANDLE_LANTERN = new SimpleLightVariant<>(false, 1.5F, new AABB(-0.198D, -0.531D, -0.198D, 0.198D, 0.091D, 0.198D), 0.000D, stack -> new TorchLightBehavior(0.2D));
-    public static final LightVariant<BrightnessLightBehavior> INCANDESCENT_LIGHT = new SimpleLightVariant<>(true, 1.0F, new AABB(-0.166D, -0.291D, -0.166D, 0.166D, 0.062D, 0.166D), 0.103D, stack -> new IncandescentBehavior(), true);
+    public static final LightVariant<BrightnessLightBehavior> OIL_LANTERN = new SimpleLightVariant<>(false, 1.5F, new Box(-0.219D, -0.656D, -0.188D, 0.219D, 0.091D, 0.188D), 0.000D, stack -> new TorchLightBehavior(0.13D));
+    public static final LightVariant<BrightnessLightBehavior> CANDLE_LANTERN = new SimpleLightVariant<>(false, 1.5F, new Box(-0.198D, -0.531D, -0.198D, 0.198D, 0.091D, 0.198D), 0.000D, stack -> new TorchLightBehavior(0.2D));
+    public static final LightVariant<BrightnessLightBehavior> INCANDESCENT_LIGHT = new SimpleLightVariant<>(true, 1.0F, new Box(-0.166D, -0.291D, -0.166D, 0.166D, 0.062D, 0.166D), 0.103D, stack -> new IncandescentBehavior(), true);
 
     private final boolean parallelsCord;
 
     private final float spacing;
 
-    private final AABB bounds;
+    private final Box bounds;
 
     private final double floorOffset;
 
@@ -47,11 +49,11 @@ public class SimpleLightVariant<T extends LightBehavior> implements LightVariant
 
     private final boolean orientable;
 
-    SimpleLightVariant(final boolean parallelsCord, final float spacing, final AABB bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory) {
+    SimpleLightVariant(final boolean parallelsCord, final float spacing, final Box bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory) {
         this(parallelsCord, spacing, bounds, floorOffset, behaviorFactory, false);
     }
 
-    SimpleLightVariant(final boolean parallelsCord, final float spacing, final AABB bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory, final boolean orientable) {
+    SimpleLightVariant(final boolean parallelsCord, final float spacing, final Box bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory, final boolean orientable) {
         this.parallelsCord = parallelsCord;
         this.spacing = spacing;
         this.bounds = bounds;
@@ -71,7 +73,7 @@ public class SimpleLightVariant<T extends LightBehavior> implements LightVariant
     }
 
     @Override
-    public AABB getBounds() {
+    public Box getBounds() {
         return this.bounds;
     }
 

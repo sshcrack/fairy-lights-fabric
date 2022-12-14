@@ -1,13 +1,24 @@
 package me.sshcrack.fairylights.server.connection;
 
+import me.sshcrack.fairylights.client.gui.EditLetteredConnectionScreen;
 import me.sshcrack.fairylights.server.collision.Intersection;
 import me.sshcrack.fairylights.server.fastener.Fastener;
 import me.sshcrack.fairylights.server.feature.FeatureType;
 import me.sshcrack.fairylights.server.feature.Pennant;
+import me.sshcrack.fairylights.server.item.DyeableItem;
+import me.sshcrack.fairylights.server.sound.FLSounds;
 import me.sshcrack.fairylights.util.OreDictUtils;
+import me.sshcrack.fairylights.util.forge.items.ItemHandlerHelper;
 import me.sshcrack.fairylights.util.styledstring.StyledString;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -39,17 +50,17 @@ public final class PennantBuntingConnection extends HangingFeatureConnection<Pen
     }
 
     @Override
-    public boolean interact(final PlayerEntity player, final Vec3d hit, final FeatureType featureType, final int feature, final ItemStack heldStack, final InteractionHand hand) {
+    public boolean interact(final PlayerEntity player, final Vec3d hit, final FeatureType featureType, final int feature, final ItemStack heldStack, final Hand hand) {
         if (featureType == FEATURE && OreDictUtils.isDye(heldStack)) {
             final int index = feature % this.pattern.size();
             final ItemStack pennant = this.pattern.get(index);
-            if (!ItemStack.matches(pennant, heldStack)) {
+            if (!ItemStack.areEqual(pennant, heldStack)) {
                 final ItemStack placed = heldStack.split(1);
                 this.pattern.set(index, placed);
                 ItemHandlerHelper.giveItemToPlayer(player, pennant);
                 this.computeCatenary();
-                heldStack.shrink(1);
-                this.world.playSound(null, hit.x, hit.y, hit.z, FLSounds.FEATURE_COLOR_CHANGE.get(), SoundSource.BLOCKS, 1, 1);
+                heldStack.decrement(1);
+                this.world.playSound(null, hit.x, hit.y, hit.z, FLSounds.FEATURE_COLOR_CHANGE, SoundCategory.BLOCKS, 1, 1);
                 return true;
             }
         }
@@ -70,7 +81,7 @@ public final class PennantBuntingConnection extends HangingFeatureConnection<Pen
     }
 
     @Override
-    protected Pennant createFeature(final int index, final Vec3 point, final float yaw, final float pitch) {
+    protected Pennant createFeature(final int index, final Vec3d point, final float yaw, final float pitch) {
         final ItemStack data = this.pattern.isEmpty() ? ItemStack.EMPTY : this.pattern.get(index % this.pattern.size());
         return new Pennant(index, point, yaw, pitch, DyeableItem.getColor(data), data.getItem());
     }
@@ -97,17 +108,17 @@ public final class PennantBuntingConnection extends HangingFeatureConnection<Pen
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Screen createTextGUI() {
         return new EditLetteredConnectionScreen<>(this);
     }
 
     @Override
-    public CompoundTag serializeLogic() {
-        final CompoundTag compound = super.serializeLogic();
-        final ListTag patternList = new ListTag();
+    public NbtCompound serializeLogic() {
+        final NbtCompound compound = super.serializeLogic();
+        final NbtList patternList = new NbtList();
         for (final ItemStack entry : this.pattern) {
-            patternList.add(entry.save(new CompoundTag()));
+            patternList.add(entry.writeNbt(new NbtCompound()));
         }
         compound.put("pattern", patternList);
         compound.put("text", StyledString.serialize(this.text));
@@ -115,12 +126,12 @@ public final class PennantBuntingConnection extends HangingFeatureConnection<Pen
     }
 
     @Override
-    public void deserializeLogic(final CompoundTag compound) {
+    public void deserializeLogic(final NbtCompound compound) {
         super.deserializeLogic(compound);
         this.pattern = new ArrayList<>();
-        final ListTag patternList = compound.getList("pattern", Tag.TAG_COMPOUND);
+        final NbtList patternList = compound.getList("pattern", NbtCompound.COMPOUND_TYPE);
         for (int i = 0; i < patternList.size(); i++) {
-            this.pattern.add(ItemStack.of(patternList.getCompound(i)));
+            this.pattern.add(ItemStack.fromNbt(patternList.getCompound(i)));
         }
         this.text = StyledString.deserialize(compound.getCompound("text"));
     }

@@ -1,26 +1,23 @@
 package me.sshcrack.fairylights.server.item;
 
-import me.paulf.fairylights.FairyLights;
-import me.paulf.fairylights.server.connection.ConnectionTypes;
-import me.paulf.fairylights.server.item.crafting.FLCraftingRecipes;
-import me.paulf.fairylights.server.string.StringType;
-import me.paulf.fairylights.util.RegistryObjects;
+import me.sshcrack.fairylights.FairyLightsMod;
 import me.sshcrack.fairylights.server.connection.ConnectionTypes;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.NonNullList;
+import me.sshcrack.fairylights.server.item.crafting.FLCraftingRecipes;
+import me.sshcrack.fairylights.server.string.StringType;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.text.Text;
+import net.minecraft.util.DyeColor;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,40 +28,40 @@ public final class HangingLightsConnectionItem extends ConnectionItem {
 
 
     @Override
-    public void appendHoverText(final ItemStack stack, @Nullable final Level world, final List<Component> tooltip, final TooltipFlag flag) {
-        final CompoundTag compound = stack.getTag();
+    public void appendTooltip(final ItemStack stack, @Nullable final World world, final List<Text> tooltip, final TooltipContext flag) {
+        final NbtCompound compound = stack.getNbt();
         if (compound != null) {
-            final Identifier name = RegistryObjects.getName(FairyLights.STRING_TYPES.get(), getString(compound));
-            tooltip.add(Component.translatable("item." + name.getNamespace() + "." + name.getPath()).withStyle(ChatFormatting.GRAY));
+            final Identifier name = FairyLightsMod.STRING_TYPE.getId(getString(compound));
+            tooltip.add(Text.translatable("item." + name.getNamespace() + "." + name.getPath()).formatted(Formatting.GRAY));
         }
-        if (compound != null && compound.contains("pattern", Tag.TAG_LIST)) {
-            final ListTag tagList = compound.getList("pattern", Tag.TAG_COMPOUND);
+        if (compound != null && compound.contains("pattern", NbtCompound.LIST_TYPE)) {
+            final NbtList tagList = compound.getList("pattern", NbtCompound.COMPOUND_TYPE);
             final int tagCount = tagList.size();
             if (tagCount > 0) {
-                tooltip.add(Component.empty());
+                tooltip.add(Text.empty());
             }
             for (int i = 0; i < tagCount; i++) {
-                final ItemStack lightStack = ItemStack.of(tagList.getCompound(i));
-                tooltip.add(lightStack.getHoverName());
-                lightStack.getItem().appendHoverText(lightStack, world, tooltip, flag);
+                final ItemStack lightStack = ItemStack.fromNbt(tagList.getCompound(i));
+                tooltip.add(lightStack.getName());
+                lightStack.getItem().appendTooltip(lightStack, world, tooltip, flag);
             }
         }
     }
 
     @Override
-    public void fillItemCategory(final CreativeModeTab tab, final NonNullList<ItemStack> subItems) {
-        if (this.allowedIn(tab)) {
+    public void appendStacks(final ItemGroup tab, final DefaultedList<ItemStack> subItems) {
+        if (this.isIn(tab)) {
             for (final DyeColor color : DyeColor.values()) {
                 subItems.add(FLCraftingRecipes.makeHangingLights(new ItemStack(this), color));
             }
         }
     }
 
-    public static StringType getString(final CompoundTag tag) {
-        return Objects.requireNonNull(FairyLights.STRING_TYPES.get().getValue(Identifier.tryParse(tag.getString("string"))));
+    public static StringType getString(final NbtCompound tag) {
+        return Objects.requireNonNull(FairyLightsMod.STRING_TYPE.get(Identifier.tryParse(tag.getString("string"))));
     }
 
-    public static void setString(final CompoundTag tag, final StringType string) {
-        tag.putString("string", RegistryObjects.getName(FairyLights.STRING_TYPES.get(), string).toString());
+    public static void setString(final NbtCompound tag, final StringType string) {
+        tag.putString("string", FairyLightsMod.STRING_TYPE.getId(string).toString());
     }
 }

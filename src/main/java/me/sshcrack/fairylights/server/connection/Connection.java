@@ -200,7 +200,7 @@ public abstract class Connection implements NBTSerializable {
             );
             this.world.spawnEntity(item);
         }
-        this.world.playSound(null, hit.x, hit.y, hit.z, FLSounds.CORD_DISCONNECT.get(), SoundCategory.BLOCKS, 1, 1);
+        this.world.playSound(null, hit.x, hit.y, hit.z, FLSounds.CORD_DISCONNECT, SoundCategory.BLOCKS, 1, 1);
     }
 
     public boolean reconnect(final Fastener<?> destination) {
@@ -304,10 +304,10 @@ public abstract class Connection implements NBTSerializable {
             final Vec3d vec = point.subtract(from);
             if (vec.length() > 1e-6) {
                 final Direction facing = this.fastener.getFacing();
-                if (this.fastener instanceof FenceFastener && dest instanceof FenceFastener && vec.horizontalDistance() < 1e-2) {
+                if (this.fastener instanceof FenceFastener && dest instanceof FenceFastener && vec.horizontalLength() < 1e-2) {
                     this.catenary = this.verticalHelix(vec);
                 } else {
-                    this.catenary = Catenary.from(vec, facing.getAxis() == Direction.Axis.Y ? 0.0F : (float) Math.toRadians(90.0F + facing.toYRot()), SLACK_CURVE, this.slack);
+                    this.catenary = Catenary.from(vec, facing.getAxis() == Direction.Axis.Y ? 0.0F : (float) Math.toRadians(90.0F + facing.asRotation()), SLACK_CURVE, this.slack);
                 }
                 this.onCalculateCatenary(!this.destination.equals(this.prevDestination));
                 final CollidableList.Builder bob = new CollidableList.Builder();
@@ -358,7 +358,7 @@ public abstract class Connection implements NBTSerializable {
         }
         final float r = this.getRadius();
         final Catenary.SegmentIterator it = this.catenary.iterator();
-        final Box[] bounds = new Box[][count - 1];
+        final Box[] bounds = new Box[count - 1];
         int index = 0;
         while (it.next()) {
             final float x0 = it.getX(0.0F);

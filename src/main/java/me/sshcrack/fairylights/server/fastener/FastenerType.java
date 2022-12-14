@@ -1,9 +1,9 @@
 package me.sshcrack.fairylights.server.fastener;
 
-import me.paulf.fairylights.server.fastener.accessor.BlockFastenerAccessor;
-import me.paulf.fairylights.server.fastener.accessor.FastenerAccessor;
-import me.paulf.fairylights.server.fastener.accessor.FenceFastenerAccessor;
-import me.paulf.fairylights.server.fastener.accessor.PlayerFastenerAccessor;
+import me.sshcrack.fairylights.server.fastener.accessor.BlockFastenerAccessor;
+import me.sshcrack.fairylights.server.fastener.accessor.FastenerAccessor;
+import me.sshcrack.fairylights.server.fastener.accessor.FenceFastenerAccessor;
+import me.sshcrack.fairylights.server.fastener.accessor.PlayerFastenerAccessor;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.HashMap;

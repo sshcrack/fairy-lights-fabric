@@ -1,6 +1,7 @@
 package me.sshcrack.fairylights.server.item;
 
 import me.sshcrack.fairylights.server.block.LightBlock;
+import me.sshcrack.fairylights.util.forge.capabilities.ICapabilityProvider;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;

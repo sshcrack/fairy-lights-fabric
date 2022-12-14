@@ -1,0 +1,11 @@
+---- BlockEntity ----
+
+saveId = writeIdToNbt
+saveWithoutMetadata = createNbt
+saveWithId = createNbtWithId
+saveWithFullMetadata = createNbtWithIdentifyingData
+saveAdditional = writeNbt
+load = readNbt
+getUpdateTag = toInitialChunkDataNbt
+
+--- End ----

@@ -3,7 +3,7 @@ package me.sshcrack.fairylights.server.connection;
 import me.paulf.fairylights.server.fastener.Fastener;
 import me.paulf.fairylights.server.item.DyeableItem;
 import me.sshcrack.fairylights.server.fastener.Fastener;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.item.DyeColor;
@@ -29,7 +29,7 @@ public final class GarlandTinselConnection extends Connection {
     }
 
     @Override
-    public CompoundTag serializeLogic() {
+    public NbtCompound serializeLogic() {
         return DyeableItem.setColor(super.serializeLogic(), this.color);
     }
 

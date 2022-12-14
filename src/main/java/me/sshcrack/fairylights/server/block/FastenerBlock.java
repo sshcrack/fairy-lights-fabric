@@ -9,9 +9,9 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class FastenerBlock extends FacingBlock implements BlockEntityProvider {
@@ -46,14 +47,15 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
 
     public FastenerBlock(final AbstractBlock.Settings properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any()
-            .setValue(FACING, Direction.NORTH)
-            .setValue(TRIGGERED, false)
+        this.setDefaultState(this.getStateManager()
+                .getDefaultState()
+                .with(FACING, Direction.NORTH)
+                .with(TRIGGERED, false)
         );
     }
 
     @Override
-    protected void createBlockStateDefinition(final StateDefinition.Builder<Block, BlockState> builder) {
+    protected void appendProperties(final StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, TRIGGERED);
     }
 
@@ -90,7 +92,7 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
     }
 
     @Override
-    public BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
+    public BlockEntity createBlockEntity(final BlockPos pos, final BlockState state) {
         return new FastenerBlockEntity(pos, state);
     }
 
@@ -98,9 +100,9 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(final World level, final BlockState state, final BlockEntityType<T> type) {
         if (level.isClient()) {
-            return createTickerHelper(type, FLBlockEntities.FASTENER.get(), FastenerBlockEntity::tickClient);
+            return createTickerHelper(type, FLBlockEntities.FASTENER, FastenerBlockEntity::tickClient);
         }
-        return createTickerHelper(type, FLBlockEntities.FASTENER.get(), FastenerBlockEntity::tick);
+        return createTickerHelper(type, FLBlockEntities.FASTENER, FastenerBlockEntity::tick);
     }
 
     @SuppressWarnings("unchecked")
@@ -112,7 +114,7 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
     @SuppressWarnings("deprecation")
     @Override
     public void onStateReplaced(final BlockState state, final World world, final BlockPos pos, final BlockState newState, final boolean isMoving) {
-        if (!state.isIn(newState.getBlock())) {
+        if (!state.isOf(newState.getBlock())) {
             final BlockEntity entity = world.getBlockEntity(pos);
             if (entity instanceof FastenerBlockEntity) {
                 entity.getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(f -> f.dropItems(world, pos));
