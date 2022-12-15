@@ -1,6 +1,5 @@
 package me.sshcrack.fairylights.client.renderer.block.entity;
 
-import me.paulf.fairylights.util.FLMth;
 import me.sshcrack.fairylights.client.ClientProxy;
 import me.sshcrack.fairylights.client.FLModelLayers;
 import me.sshcrack.fairylights.server.connection.GarlandVineConnection;
@@ -8,15 +7,10 @@ import me.sshcrack.fairylights.util.Curve;
 import me.sshcrack.fairylights.util.FLMth;
 import me.sshcrack.fairylights.util.RandomArray;
 import net.minecraft.client.model.*;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3f;
 
@@ -47,7 +41,7 @@ public class GarlandVineRenderer extends ConnectionRenderer<GarlandVineConnectio
             matrix.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(RAND.get(index + hash) * 45.0F));
             matrix.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(RAND.get(index + 8 + hash) * 60.F + 90.0F));
             this.rings.setWhich(index % RING_COUNT);
-            this.rings.renderToBuffer(matrix, buf, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+            this.rings.render(matrix, buf, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
             matrix.pop();
         });
     }
@@ -74,11 +68,11 @@ public class GarlandVineRenderer extends ConnectionRenderer<GarlandVineConnectio
             ModelPartBuilder root = ModelPartBuilder.create()
                 .uv(14, 91)
                 .cuboid(-size / 2.0F, -size / 2.0F, -size / 2.0F, size, size, size);
-            PartPose crossPose = PartPose.rotation(0.0F, 0.0F, FLMth.HALF_PI);
+            ModelTransform crossPose = ModelTransform.rotation(0.0F, 0.0F, FLMth.HALF_PI);
             ModelData mesh = new ModelData();
             for (int i = 0; i < RING_COUNT; i++) {
-                mesh.getRoot().addChild(Integer.toString(i), root, PartPose.ZERO)
-                    .addOrReplaceChild("cross_" + i, ModelPartBuilder.create()
+                mesh.getRoot().addChild(Integer.toString(i), root, ModelTransform.NONE)
+                    .addChild("cross_" + i, ModelPartBuilder.create()
                         .uv(i * 8, 64)
                         .cuboid(-4.0F, -4.0F, 0.0F, 8.0F, 8.0F, 0.0F)
                         .cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 0.0F, 8.0F), crossPose);
@@ -91,7 +85,7 @@ public class GarlandVineRenderer extends ConnectionRenderer<GarlandVineConnectio
         }
 
         @Override
-        public void renderToBuffer(final MatrixStack matrix, final VertexConsumer builder, final int light, final int overlay, final float r, final float g, final float b, final float a) {
+        public void render(final MatrixStack matrix, final VertexConsumer builder, final int light, final int overlay, final float r, final float g, final float b, final float a) {
             this.roots[this.which].render(matrix, builder, light, overlay, r, g, b, a);
         }
     }

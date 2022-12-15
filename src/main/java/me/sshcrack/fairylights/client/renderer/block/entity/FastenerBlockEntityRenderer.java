@@ -3,22 +3,25 @@ package me.sshcrack.fairylights.client.renderer.block.entity;
 import me.sshcrack.fairylights.server.block.entity.FastenerBlockEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 
-public final class FastenerBlockEntityRenderer implements BlockEntityRenderer<FastenerBlockEntityRenderer> {
+public final class FastenerBlockEntityRenderer implements BlockEntityRenderer<FastenerBlockEntity> {
 
     private final BlockView view;
     private final FastenerRenderer renderer;
 
-    public FastenerBlockEntityRenderer(final BlockEntityRendererProvider.Context context, final BlockView view) {
+    public FastenerBlockEntityRenderer(final BlockEntityRendererFactory.Context context, final BlockView view) {
         this.view = view;
-        this.renderer = new FastenerRenderer(context::bakeLayer);
+        this.renderer = new FastenerRenderer(context::getLayerModelPart);
     }
 
+
+
     @Override
-    public boolean shouldRenderOffScreen(final FastenerBlockEntity fastener) {
+    public boolean rendersOutsideBoundingBox(final FastenerBlockEntity fastener) {
         return true;
     }
 

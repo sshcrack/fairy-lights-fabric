@@ -3,6 +3,7 @@ package me.sshcrack.fairylights.server.fastener;
 import me.sshcrack.fairylights.server.connection.Connection;
 import me.sshcrack.fairylights.server.connection.ConnectionType;
 import me.sshcrack.fairylights.server.fastener.accessor.FastenerAccessor;
+import me.sshcrack.fairylights.util.forge.capabilities.ICapabilitySerializable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;

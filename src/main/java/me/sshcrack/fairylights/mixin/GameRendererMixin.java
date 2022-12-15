@@ -1,7 +1,6 @@
 package me.sshcrack.fairylights.mixin;
 
-import me.sshcrack.fairylights.FairyLightsMod;
-import net.minecraft.client.gui.screen.TitleScreen;
+import me.sshcrack.fairylights.client.ClientEventHandler;
 import net.minecraft.client.render.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

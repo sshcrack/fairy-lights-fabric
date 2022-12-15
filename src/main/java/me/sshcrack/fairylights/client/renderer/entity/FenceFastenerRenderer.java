@@ -6,6 +6,7 @@ import me.sshcrack.fairylights.client.renderer.block.entity.FastenerRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
@@ -25,7 +26,7 @@ public final class FenceFastenerRenderer extends EntityRenderer<FenceFastenerEnt
     }
 
     @Override
-    public void render(final FenceFastenerEntity entity, final float yaw, final float delta, final PoseStack matrix, final VertexConsumerProvider source, final int packedLight) {
+    public void render(final FenceFastenerEntity entity, final float yaw, final float delta, final MatrixStack matrix, final VertexConsumerProvider source, final int packedLight) {
         final VertexConsumer buf = source.getBuffer(Sheets.cutoutBlockSheet());
         matrix.pushPose();
         FastenerRenderer.renderBakedModel(MODEL, matrix, buf, 1.0F, 1.0F, 1.0F, packedLight, OverlayTexture.NO_OVERLAY);

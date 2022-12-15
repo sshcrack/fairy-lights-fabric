@@ -1,32 +1,37 @@
 package me.sshcrack.fairylights.server.connection;
 
-import me.paulf.fairylights.FairyLights;
-import me.paulf.fairylights.server.item.FLItems;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import me.sshcrack.fairylights.FairyLightsMod;
+import me.sshcrack.fairylights.server.item.FLItems;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
+import java.util.function.Supplier;
 
 public final class ConnectionTypes {
     private ConnectionTypes() {}
 
-    public static final DeferredRegister<ConnectionType<?>> REG = DeferredRegister.create(FairyLights.CONNECTION_TYPE, FairyLights.ID);
-
-    public static final RegistryObject<ConnectionType<me.paulf.fairylights.server.connection.HangingLightsConnection>> HANGING_LIGHTS = register("hanging_lights",
-        () -> ConnectionType.Builder.create(me.paulf.fairylights.server.connection.HangingLightsConnection::new).item(FLItems.HANGING_LIGHTS).build()
+    public static final ConnectionType<HangingLightsConnection> HANGING_LIGHTS = register("hanging_lights",
+        () -> ConnectionType.Builder.create(HangingLightsConnection::new).item(FLItems.HANGING_LIGHTS).build()
     );
 
-    public static final RegistryObject<ConnectionType<GarlandVineConnection>> VINE_GARLAND = register("vine_garland",
+    public static final ConnectionType<GarlandVineConnection> VINE_GARLAND = register("vine_garland",
         () -> ConnectionType.Builder.create(GarlandVineConnection::new).item(FLItems.GARLAND).build()
     );
 
-    public static final RegistryObject<ConnectionType<GarlandTinselConnection>> TINSEL_GARLAND = register("tinsel_garland",
+    public static final ConnectionType<GarlandTinselConnection> TINSEL_GARLAND = register("tinsel_garland",
         () -> ConnectionType.Builder.create(GarlandTinselConnection::new).item(FLItems.TINSEL).build()
     );
 
-    public static final RegistryObject<ConnectionType<PennantBuntingConnection>> PENNANT_BUNTING = register("pennant_bunting",
+    public static final ConnectionType<PennantBuntingConnection> PENNANT_BUNTING = register("pennant_bunting",
         () -> ConnectionType.Builder.create(PennantBuntingConnection::new).item(FLItems.PENNANT_BUNTING).build()
     );
 
-    public static final RegistryObject<ConnectionType<me.paulf.fairylights.server.connection.LetterBuntingConnection>> LETTER_BUNTING = register("letter_bunting",
-        () -> ConnectionType.Builder.create(me.paulf.fairylights.server.connection.LetterBuntingConnection::new).item(FLItems.LETTER_BUNTING).build()
+    public static final ConnectionType<LetterBuntingConnection> LETTER_BUNTING = register("letter_bunting",
+        () -> ConnectionType.Builder.create(LetterBuntingConnection::new).item(FLItems.LETTER_BUNTING).build()
     );
+
+    public static <T extends Connection> ConnectionType<T> register(String name, Supplier<ConnectionType<T>> supplier) {
+        Identifier id = new Identifier(FairyLightsMod.ModID, name);
+        return Registry.register(FairyLightsMod.CONNECTION_TYPES, id, supplier.get());
+    }
 }

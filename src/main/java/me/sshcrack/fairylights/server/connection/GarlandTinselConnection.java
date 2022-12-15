@@ -1,13 +1,10 @@
 package me.sshcrack.fairylights.server.connection;
 
-import me.paulf.fairylights.server.fastener.Fastener;
-import me.paulf.fairylights.server.item.DyeableItem;
 import me.sshcrack.fairylights.server.fastener.Fastener;
+import me.sshcrack.fairylights.server.item.DyeableItem;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.DyeColor;
 import net.minecraft.world.World;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.level.Level;
 
 import java.util.UUID;
 

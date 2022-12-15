@@ -1,18 +1,19 @@
 package me.sshcrack.fairylights;
 
+import me.sshcrack.fairylights.client.ClientEventHandler;
+import me.sshcrack.fairylights.server.connection.Connection;
+import me.sshcrack.fairylights.server.connection.ConnectionType;
+import me.sshcrack.fairylights.server.connection.ConnectionTypes;
 import me.sshcrack.fairylights.server.item.FLItems;
+import me.sshcrack.fairylights.server.sound.FLSounds;
 import me.sshcrack.fairylights.server.string.StringType;
-import me.sshcrack.fairylights.server.string.StringTypes;
+import me.sshcrack.fairylights.util.forge.events.EventBus;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,10 @@ public class FairyLightsMod implements ModInitializer {
             .build();
 
     public static final Identifier STRING_TYPE_ID = new Identifier(ModID, "string_type");
+    public static final Identifier CONNECTION_TYPES_ID = new Identifier(ModID, "connection_types");
     public static final SimpleRegistry<StringType> STRING_TYPE = FabricRegistryBuilder.createSimple(StringType.class, FairyLightsMod.STRING_TYPE_ID).buildAndRegister();
+    public static final SimpleRegistry<ConnectionType> CONNECTION_TYPES = FabricRegistryBuilder.createSimple(ConnectionType.class, FairyLightsMod.CONNECTION_TYPES_ID).buildAndRegister();
+    public static final EventBus EVENT_BUS = new EventBus();
 
 
 
@@ -39,6 +43,6 @@ public class FairyLightsMod implements ModInitializer {
         // However, some things (like resources) may still be uninitialized.
         // Proceed with mild caution.
 
-        LOGGER.info("Hello Fabric world!");
+        EVENT_BUS.registerEventHandler(new ClientEventHandler());
     }
 }

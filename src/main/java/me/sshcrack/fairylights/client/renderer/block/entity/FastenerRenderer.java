@@ -67,7 +67,7 @@ public class FastenerRenderer {
             if (!state.isIn(OtherTags.FENCES)) {
                 return false;
             }
-            final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.buffer(source, RenderLayer::getEntityCutout);
+            final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.getVertexConsumer(source, RenderLayer::getEntityCutout);
             final float offset = -1.5F / 16.0F;
             final boolean north = state.get(FenceBlock.NORTH);
             final boolean east = state.get(FenceBlock.EAST);
