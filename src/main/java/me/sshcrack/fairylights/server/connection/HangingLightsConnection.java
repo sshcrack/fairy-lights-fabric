@@ -135,7 +135,7 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
     }
 
     private void updateNeighbors(final Fastener<?> fastener) {
-        this.world.updateNeighbors(fastener.getPos(), FLBlocks.FASTENER);
+        this.world.updateNeighbors(fastener.getPos(), FLBlocks.FASTENER.get());
     }
 
     @Override

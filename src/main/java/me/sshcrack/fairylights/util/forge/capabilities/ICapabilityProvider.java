@@ -5,9 +5,8 @@
 
 package me.sshcrack.fairylights.util.forge.capabilities;
 
-import net.minecraft.util.math.Direction;
+import me.sshcrack.fairylights.util.forge.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -20,17 +19,8 @@ public interface ICapabilityProvider
      * be notified if the requested capability get lost.
      *
      * @param cap The capability to check
-     * @param side The Side to check from,
      *   <strong>CAN BE NULL</strong>. Null is defined to represent 'internal' or 'self'
      * @return The requested an optional holding the requested capability.
      */
-    @NotNull <T> Optional<T> getCapability(@NotNull final Capability<T> cap, final @Nullable Direction side);
-
-    /*
-     * Purely added as a bouncer to sided version, to make modders stop complaining about calling with a null value.
-     * This should never be OVERRIDDEN, modders should only ever implement the sided version.
-     */
-    @NotNull default <T> Optional<T> getCapability(@NotNull final Capability<T> cap) {
-        return getCapability(cap, null);
-    }
+    @NotNull <T> LazyOptional<T> getCapability(@NotNull final Capability<T> cap);
 }

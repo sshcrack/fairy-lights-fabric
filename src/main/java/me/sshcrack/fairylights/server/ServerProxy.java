@@ -3,8 +3,10 @@ package me.sshcrack.fairylights.server;
 import me.sshcrack.fairylights.FairyLightsMod;
 import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.config.FLConfig;
+import me.sshcrack.fairylights.server.event.ServerEventHandler;
 import me.sshcrack.fairylights.server.fastener.CreateBlockViewEvent;
 import me.sshcrack.fairylights.server.fastener.RegularBlockView;
+import me.sshcrack.fairylights.server.jingle.JingleManager;
 import me.sshcrack.fairylights.util.forge.events.AddReloadListenerEvent;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -12,15 +14,7 @@ import net.minecraft.world.World;
 
 public class ServerProxy {
     public void init(final IEventBus modBus) {
-        FairyLightsMod.EVENT_BUS.<AddReloadListenerEvent>addListener(e -> {
-            e.addListener(JingleManager.INSTANCE);
-        });
-        MinecraftForge.EVENT_BUS.register(new ServerEventHandler());
-        modBus.addListener(this::setup);
-    }
-
-    private void setup(final FMLCommonSetupEvent event) {
-        CapabilityHandler.register();
+        FairyLightsMod.EVENT_BUS.register(new ServerEventHandler());
     }
 
     public static void sendToPlayersWatchingChunk(final Object message, final World world, final BlockPos pos) {

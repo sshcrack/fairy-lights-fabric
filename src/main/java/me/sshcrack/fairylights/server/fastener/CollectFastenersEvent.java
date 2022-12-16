@@ -1,6 +1,5 @@
 package me.sshcrack.fairylights.server.fastener;
 
-import me.paulf.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.util.forge.capabilities.ICapabilityProvider;
 import me.sshcrack.fairylights.util.forge.events.Event;
@@ -8,12 +7,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.eventbus.api.Event;
 
 import java.lang.reflect.Field;
 import java.util.Collection;

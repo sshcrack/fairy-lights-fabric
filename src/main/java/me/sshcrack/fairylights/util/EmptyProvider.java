@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public final class EmptyProvider implements ICapabilityProvider {
     @Override
-    public <T> Optional<T> getCapability(final Capability<T> cap, @Nullable final Direction side) {
+    public <T> Optional<T> getCapability(final Capability<T> cap) {
         return Optional.empty();
     }
 }

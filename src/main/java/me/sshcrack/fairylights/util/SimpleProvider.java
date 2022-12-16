@@ -19,7 +19,7 @@ public final class SimpleProvider<T> implements ICapabilityProvider {
     }
 
     @Override
-    public <U> Optional<U> getCapability(final Capability<U> capability, @Nullable final Direction facing) {
+    public <U> Optional<U> getCapability(final Capability<U> capability) {
         return this.capability.orEmpty(capability, this.op);
     }
 }

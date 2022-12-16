@@ -50,7 +50,7 @@ public abstract class ConnectionItem extends Item {
         final World world = context.getWorld();
         final Direction side = context.getSide();
         final BlockPos clickPos = context.getBlockPos();
-        final Block fastener = FLBlocks.FASTENER;
+        final Block fastener = FLBlocks.FASTENER.get();
         final ItemStack stack = context.getStack();
         if (this.isConnectionInOtherHand(world, user, stack)) {
             return ActionResult.PASS;

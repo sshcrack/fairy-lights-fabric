@@ -3,6 +3,7 @@ package me.sshcrack.fairylights.server.block;
 
 import me.sshcrack.fairylights.server.block.entity.FLBlockEntities;
 import me.sshcrack.fairylights.server.block.entity.FastenerBlockEntity;
+import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.connection.HangingLightsConnection;
 import me.sshcrack.fairylights.server.fastener.accessor.BlockFastenerAccessor;
 import net.minecraft.block.*;
@@ -100,9 +101,9 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(final World level, final BlockState state, final BlockEntityType<T> type) {
         if (level.isClient()) {
-            return createTickerHelper(type, FLBlockEntities.FASTENER, FastenerBlockEntity::tickClient);
+            return createTickerHelper(type, FLBlockEntities.FASTENER.get(), FastenerBlockEntity::tickClient);
         }
-        return createTickerHelper(type, FLBlockEntities.FASTENER, FastenerBlockEntity::tick);
+        return createTickerHelper(type, FLBlockEntities.FASTENER.get(), FastenerBlockEntity::tick);
     }
 
     @SuppressWarnings("unchecked")

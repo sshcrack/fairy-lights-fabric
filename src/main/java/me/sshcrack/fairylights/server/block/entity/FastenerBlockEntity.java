@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public final class FastenerBlockEntity extends BlockEntity {
     public FastenerBlockEntity(final BlockPos pos, final BlockState state) {
-        super(FLBlockEntities.FASTENER, pos ,state);
+        super(FLBlockEntities.FASTENER.get(), pos ,state);
     }
 
     //TODO Maybe important idk
@@ -28,12 +28,12 @@ public final class FastenerBlockEntity extends BlockEntity {
     */
 
     public Vec3d getOffset() {
-        return FLBlocks.FASTENER.getOffset(this.getFacing(), 0.125F);
+        return FLBlocks.FASTENER.get().getOffset(this.getFacing(), 0.125F);
     }
 
     public Direction getFacing() {
         final BlockState state = this.world.getBlockState(this.pos);
-        if (state.getBlock() != FLBlocks.FASTENER) {
+        if (state.getBlock() != FLBlocks.FASTENER.get()) {
             return Direction.UP;
         }
         return state.get(FastenerBlock.FACING);

@@ -12,33 +12,33 @@ import java.util.function.Supplier;
 public final class FLBlockEntities {
     private FLBlockEntities() {}
 
-    private static <T extends BlockEntity> BlockEntityType<T> register(String name, Supplier<BlockEntityType<T>> typeSupplier) {
+    private static <T extends BlockEntity> Supplier<BlockEntityType<T>> register(String name, Supplier<BlockEntityType<T>> typeSupplier) {
         Identifier id = new Identifier(FairyLightsMod.ModID, name);
-        return Registry.register(Registry.BLOCK_ENTITY_TYPE, id, typeSupplier.get());
+        return () -> Registry.register(Registry.BLOCK_ENTITY_TYPE, id, typeSupplier.get());
     }
 
-    public static final BlockEntityType<FastenerBlockEntity> FASTENER = register("fastener", () -> BlockEntityType.Builder.create(FastenerBlockEntity::new, FLBlocks.FASTENER).build(null));
+    public static final Supplier<BlockEntityType<FastenerBlockEntity>> FASTENER = register("fastener", () -> BlockEntityType.Builder.create(FastenerBlockEntity::new, FLBlocks.FASTENER.get()).build(null));
 
-    public static final BlockEntityType<LightBlockEntity> LIGHT = register("light", () -> BlockEntityType.Builder.create(LightBlockEntity::new,
-        FLBlocks.FAIRY_LIGHT,
-        FLBlocks.PAPER_LANTERN,
-        FLBlocks.ORB_LANTERN,
-        FLBlocks.FLOWER_LIGHT,
-        FLBlocks.CANDLE_LANTERN_LIGHT,
-        FLBlocks.OIL_LANTERN_LIGHT,
-        FLBlocks.JACK_O_LANTERN,
-        FLBlocks.SKULL_LIGHT,
-        FLBlocks.GHOST_LIGHT,
-        FLBlocks.SPIDER_LIGHT,
-        FLBlocks.WITCH_LIGHT,
-        FLBlocks.SNOWFLAKE_LIGHT,
-        FLBlocks.HEART_LIGHT,
-        FLBlocks.MOON_LIGHT,
-        FLBlocks.STAR_LIGHT,
-        FLBlocks.ICICLE_LIGHTS,
-        FLBlocks.METEOR_LIGHT,
-        FLBlocks.OIL_LANTERN,
-        FLBlocks.CANDLE_LANTERN,
-        FLBlocks.INCANDESCENT_LIGHT
+    public static final Supplier<BlockEntityType<LightBlockEntity>> LIGHT = register("light", () -> BlockEntityType.Builder.create(LightBlockEntity::new,
+        FLBlocks.FAIRY_LIGHT.get(),
+        FLBlocks.PAPER_LANTERN.get(),
+        FLBlocks.ORB_LANTERN.get(),
+        FLBlocks.FLOWER_LIGHT.get(),
+        FLBlocks.CANDLE_LANTERN_LIGHT.get(),
+        FLBlocks.OIL_LANTERN_LIGHT.get(),
+        FLBlocks.JACK_O_LANTERN.get(),
+        FLBlocks.SKULL_LIGHT.get(),
+        FLBlocks.GHOST_LIGHT.get(),
+        FLBlocks.SPIDER_LIGHT.get(),
+        FLBlocks.WITCH_LIGHT.get(),
+        FLBlocks.SNOWFLAKE_LIGHT.get(),
+        FLBlocks.HEART_LIGHT.get(),
+        FLBlocks.MOON_LIGHT.get(),
+        FLBlocks.STAR_LIGHT.get(),
+        FLBlocks.ICICLE_LIGHTS.get(),
+        FLBlocks.METEOR_LIGHT.get(),
+        FLBlocks.OIL_LANTERN.get(),
+        FLBlocks.CANDLE_LANTERN.get(),
+        FLBlocks.INCANDESCENT_LIGHT.get()
     ).build(null));
 }

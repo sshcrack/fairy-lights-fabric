@@ -312,7 +312,7 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
     private final Optional<Fastener<?>> lazyOptional = Optional.of(this);
 
     @Override
-    public <T> Optional<T> getCapability(final Capability<T> capability, final Direction facing) {
+    public <T> Optional<T> getCapability(final Capability<T> capability) {
         return capability == CapabilityHandler.FASTENER_CAP ? (Optional<T>) this.lazyOptional : Optional.empty();
     }
 

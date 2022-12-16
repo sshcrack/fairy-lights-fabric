@@ -1,8 +1,12 @@
 package me.sshcrack.fairylights.server.fastener.accessor;
 
+import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.fastener.EntityFastener;
 import me.sshcrack.fairylights.server.fastener.Fastener;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
@@ -31,7 +35,7 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
     public EntityFastenerAccessor(final Class<? extends E> entityClass, final EntityFastener<E> fastener) {
         this(entityClass, fastener.getEntity().getUuid());
         this.entity = fastener.getEntity();
-        this.pos = this.entity.position();
+        this.pos = this.entity.getPos();
     }
 
     public EntityFastenerAccessor(final Class<? extends E> entityClass, final UUID uuid) {
@@ -50,15 +54,15 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
             } else if (this.pos != null) {
                 for (final E entity : world.getEntitiesByClass(this.entityClass, new Box(this.pos.subtract(1.0D, 1.0D, 1.0D), this.pos.add(1.0D, 1.0D, 1.0D)), EntityPredicates
                         .EXCEPT_SPECTATOR)) {
-                    if (this.uuid.equals(entity.getUUID())) {
+                    if (this.uuid.equals(entity.getUuid())) {
                         this.entity = entity;
                         break;
                     }
                 }
             }
         }
-        if (this.entity != null && this.entity.World == world) {
-            this.pos = this.entity.position();
+        if (this.entity != null && this.entity.world == world) {
+            this.pos = this.entity.getPos();
             return this.entity.getCapability(CapabilityHandler.FASTENER_CAP);
         }
         return Optional.empty();
@@ -66,7 +70,7 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
 
     @Override
     public boolean isGone(final World world) {
-        return !world.isClient() && this.entity != null && (!this.entity.getCapability(CapabilityHandler.FASTENER_CAP).isPresent() || this.entity.World != world);
+        return !world.isClient() && this.entity != null && (!this.entity.getCapability(CapabilityHandler.FASTENER_CAP).isPresent() || this.entity.world != world);
     }
 
     @Override
@@ -83,12 +87,12 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
     @Override
     public NbtCompound serialize() {
         final NbtCompound tag = new NbtCompound();
-        tag.putUUID("UUID", this.uuid);
+        tag.putUuid("UUID", this.uuid);
         if (this.pos != null) {
             final NbtList pos = new NbtList();
-            pos.add(DoubleTag.valueOf(this.pos.x));
-            pos.add(DoubleTag.valueOf(this.pos.y));
-            pos.add(DoubleTag.valueOf(this.pos.z));
+            pos.add(NbtDouble.of(this.pos.x));
+            pos.add(NbtDouble.of(this.pos.y));
+            pos.add(NbtDouble.of(this.pos.z));
             tag.put("Pos", pos);
         }
         return tag;
@@ -96,10 +100,10 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
 
     @Override
     public void deserialize(final NbtCompound tag) {
-        this.uuid = tag.getUUID("UUID");
-        if (tag.contains("Pos", Tag.TAG_LIST)) {
-            final NbtList pos = tag.getList("Pos", Tag.TAG_DOUBLE);
-            this.pos = new Vec3(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2));
+        this.uuid = tag.getUuid("UUID");
+        if (tag.contains("Pos", NbtCompound.LIST_TYPE)) {
+            final NbtList pos = tag.getList("Pos", NbtCompound.DOUBLE_TYPE);
+            this.pos = new Vec3d(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2));
         } else {
             this.pos = null;
         }

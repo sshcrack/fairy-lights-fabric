@@ -28,7 +28,7 @@ public class LightItem extends BlockItem {
         return this.light;
     }
 
-    @Override
+    //TODO
     public ICapabilityProvider initCapabilities(final ItemStack stack, @Nullable final NbtCompound nbt) {
         return LightVariant.provider(this.light.getVariant());
     }

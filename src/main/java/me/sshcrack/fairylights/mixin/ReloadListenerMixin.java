@@ -1,22 +1,27 @@
 package me.sshcrack.fairylights.mixin;
 
 import me.sshcrack.fairylights.FairyLightsMod;
-import net.minecraft.resource.ResourceManager;
+import me.sshcrack.fairylights.util.forge.events.AddReloadListenerEvent;
+import net.minecraft.resource.ResourceReloader;
 import net.minecraft.server.DataPackContents;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+import java.util.List;
 
 @Mixin(DataPackContents.class)
 public class ReloadListenerMixin {
-    @Inject(method = "reload", at = @At("HEAD"))
-    private static void reload(ResourceManager manager, DynamicRegistryManager.Immutable dynamicRegistryManager, CommandManager.RegistrationEnvironment commandEnvironment, int functionPermissionLevel, Executor prepareExecutor, Executor applyExecutor, CallbackInfoReturnable<CompletableFuture<DataPackContents>> cir) {
-        FairyLightsMod.EVENT_BUS.fireEvent();
+
+    @Redirect(method="reload", at=@At(value="INVOKE", target = "Lnet/minecraft/server/DataPackContents;getContents()Ljava/util/List;"))
+    private static List<ResourceReloader> test(DataPackContents instance) {
+
+        AddReloadListenerEvent event = new AddReloadListenerEvent(instance);
+        FairyLightsMod.EVENT_BUS.fireEvent(event);
+
+        List<ResourceReloader> listeners = instance.getContents();
+        listeners.addAll(event.getListeners());
+
+        return listeners;
     }
 }

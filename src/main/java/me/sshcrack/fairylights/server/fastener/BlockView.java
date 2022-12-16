@@ -1,14 +1,14 @@
 package me.sshcrack.fairylights.server.fastener;
 
-import me.paulf.fairylights.util.matrix.Matrix;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public interface BlockView {
     boolean isMoving(final World world, final BlockPos source);
 
-    Vec3 getPosition(final World world, final BlockPos source, final Vec3 pos);
+    Vec3d getPosition(final World world, final BlockPos source, final Vec3d pos);
 
-    void unrotate(final World world, final BlockPos source, final Matrix matrix, final float delta);
+    void unrotate(final World world, final BlockPos source, final MatrixStack matrix, final float delta);
 }

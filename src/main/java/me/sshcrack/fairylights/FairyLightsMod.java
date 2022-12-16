@@ -1,11 +1,8 @@
 package me.sshcrack.fairylights;
 
-import me.sshcrack.fairylights.client.ClientEventHandler;
-import me.sshcrack.fairylights.server.connection.Connection;
+import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.connection.ConnectionType;
-import me.sshcrack.fairylights.server.connection.ConnectionTypes;
 import me.sshcrack.fairylights.server.item.FLItems;
-import me.sshcrack.fairylights.server.sound.FLSounds;
 import me.sshcrack.fairylights.server.string.StringType;
 import me.sshcrack.fairylights.util.forge.events.EventBus;
 import net.fabricmc.api.ModInitializer;
@@ -43,6 +40,6 @@ public class FairyLightsMod implements ModInitializer {
         // However, some things (like resources) may still be uninitialized.
         // Proceed with mild caution.
 
-        EVENT_BUS.registerEventHandler(new ClientEventHandler());
+        CapabilityHandler.register();
     }
 }

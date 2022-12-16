@@ -6,13 +6,13 @@
 package me.sshcrack.fairylights.util.forge.capabilities;
 
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 
 /**
  * An interface designed to unify various things in the Minecraft
  * code base that can be serialized to and from a NBT tag.
  */
-public interface INBTSerializable<T extends NbtCompound>
+public interface INBTSerializable<T extends NbtElement>
 {
     T serializeNBT();
     void deserializeNBT(T nbt);

@@ -1,5 +1,6 @@
 package me.sshcrack.fairylights.server.fastener.accessor;
 
+import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.fastener.BlockFastener;
 import me.sshcrack.fairylights.server.fastener.Fastener;
 import me.sshcrack.fairylights.server.fastener.FastenerType;

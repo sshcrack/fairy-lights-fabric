@@ -1,15 +1,18 @@
 package me.sshcrack.fairylights.server.fastener;
 
 import me.sshcrack.fairylights.server.fastener.accessor.EntityFastenerAccessor;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 
-import javax.swing.text.html.parser.Entity;
 
 public abstract class EntityFastener<E extends Entity> extends AbstractFastener<EntityFastenerAccessor<E>> {
     protected final E entity;
 
     public EntityFastener(final E entity) {
         this.entity = entity;
-        this.setWorld(entity.level);
+        this.setWorld(entity.world);
     }
 
     @Override
@@ -23,11 +26,11 @@ public abstract class EntityFastener<E extends Entity> extends AbstractFastener<
 
     @Override
     public BlockPos getPos() {
-        return this.entity.blockPosition();
+        return this.entity.getBlockPos();
     }
 
     @Override
-    public Vec3 getConnectionPoint() {
-        return this.entity.position();
+    public Vec3d getConnectionPoint() {
+        return this.entity.getPos();
     }
 }

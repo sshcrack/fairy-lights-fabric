@@ -50,7 +50,7 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity/* implem
     }
 
     public FenceFastenerEntity(final World world) {
-        this(FLEntities.FASTENER, world);
+        this(FLEntities.FASTENER.get(), world);
     }
 
     public FenceFastenerEntity(final World world, final BlockPos pos) {
@@ -133,13 +133,13 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity/* implem
     public void onBreak(@Nullable final Entity breaker) {
         this.getFastener().ifPresent(fastener -> fastener.dropItems(this.world, this.getBlockPos()));
         if (breaker != null) {
-            this.world.syncWorldEvent(2001, this.getBlockPos(), Block.getRawIdFromState(FLBlocks.FASTENER.getDefaultState()));
+            this.world.syncWorldEvent(2001, this.getBlockPos(), Block.getRawIdFromState(FLBlocks.FASTENER.get().getDefaultState()));
         }
     }
 
     @Override
     public void onPlace() {
-        final BlockSoundGroup sound = FLBlocks.FASTENER.getSoundGroup(FLBlocks.FASTENER.getDefaultState());
+        final BlockSoundGroup sound = FLBlocks.FASTENER.get().getSoundGroup(FLBlocks.FASTENER.get().getDefaultState());
         this.playSound(sound.getPlaceSound(), (sound.getVolume() + 1) / 2, sound.getPitch() * 0.8F);
     }
 
