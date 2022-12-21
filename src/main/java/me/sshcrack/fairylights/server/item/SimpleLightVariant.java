@@ -2,8 +2,12 @@ package me.sshcrack.fairylights.server.item;
 
 
 import me.sshcrack.fairylights.server.feature.light.*;
+import me.sshcrack.fairylights.util.forge.capabilities.Capability;
+import me.sshcrack.fairylights.util.forge.util.LazyOptional;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.Box;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -106,5 +110,21 @@ public class SimpleLightVariant<T extends LightBehavior> implements LightVariant
             color = FixedColorBehavior.create(stack);
         }
         return new CompositeBehavior(brightness, color);
+    }
+
+    //TODO
+    @Override
+    public @NotNull <K> LazyOptional<K> getCapability(@NotNull Capability<K> cap) {
+        return null;
+    }
+
+    @Override
+    public NbtCompound serializeNBT() {
+        return null;
+    }
+
+    @Override
+    public void deserializeNBT(NbtCompound nbt) {
+
     }
 }

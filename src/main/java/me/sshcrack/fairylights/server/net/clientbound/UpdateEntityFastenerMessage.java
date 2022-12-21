@@ -1,12 +1,13 @@
 package me.sshcrack.fairylights.server.net.clientbound;
 
-import me.sshcrack.fairylights.server.net.ClientMessageContext;
+import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.net.Message;
+import me.sshcrack.fairylights.server.net_fabric.GeneralClientHandler;
+import me.sshcrack.fairylights.util.forge.capabilities.CapabilityHelper;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-
-import java.util.function.BiConsumer;
 
 public final class UpdateEntityFastenerMessage implements Message {
     private int entityId;
@@ -32,12 +33,14 @@ public final class UpdateEntityFastenerMessage implements Message {
         this.compound = buf.readNbt();
     }
 
-    public static final class Handler implements BiConsumer<UpdateEntityFastenerMessage, ClientMessageContext> {
+    //TODO maybe fix warning
+    @SuppressWarnings("unchecked")
+    public static final class Handler implements GeneralClientHandler<UpdateEntityFastenerMessage> {
         @Override
-        public void accept(final UpdateEntityFastenerMessage message, final ClientMessageContext context) {
+        public void accept(final UpdateEntityFastenerMessage message, final ClientPlayNetworkHandler context) {
             final Entity entity = context.getWorld().getEntityById(message.entityId);
             if (entity != null) {
-                entity.getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(f -> f.deserializeNBT(message.compound));
+                ((CapabilityHelper<Entity>) entity).getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(f -> f.deserializeNBT(message.compound));
             }
         }
     }

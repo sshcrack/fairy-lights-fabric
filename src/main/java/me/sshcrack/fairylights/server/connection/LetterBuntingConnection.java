@@ -5,17 +5,24 @@ import me.sshcrack.fairylights.client.gui.EditLetteredConnectionScreen;
 import me.sshcrack.fairylights.server.collision.Intersection;
 import me.sshcrack.fairylights.server.fastener.Fastener;
 import me.sshcrack.fairylights.server.feature.Letter;
+import me.sshcrack.fairylights.server.net.Message;
+import me.sshcrack.fairylights.server.net.PacketList;
+import me.sshcrack.fairylights.server.net.PacketUtil;
+import me.sshcrack.fairylights.server.net.clientbound.OpenEditLetteredConnectionScreenMessage;
 import me.sshcrack.fairylights.util.Catenary;
 import me.sshcrack.fairylights.util.Curve;
 import me.sshcrack.fairylights.util.styledstring.StyledString;
 import me.sshcrack.fairylights.util.styledstring.StylingPresence;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -65,7 +72,16 @@ public final class LetterBuntingConnection extends Connection implements Lettere
     @Override
     public void onConnect(final World world, final PlayerEntity user, final ItemStack heldStack) {
         if (this.text.isEmpty()) {
-            FairyLightsMod.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new OpenEditLetteredConnectionScreenMessage<>(this));
+            Message msg = new OpenEditLetteredConnectionScreenMessage<>(this);
+            Identifier id = PacketList.getId(PacketList.S2C_OPEN_EDIT_LETTERED);
+            PacketByteBuf buf = PacketUtil.msgToBuf(msg);
+
+            if(world.isClient()) {
+                FairyLightsMod.LOGGER.warn("Could not send connect packet as it is client");
+                return;
+            }
+
+            ServerPlayNetworking.send((ServerPlayerEntity) user, id, buf);
         }
     }
 
@@ -187,7 +203,7 @@ public final class LetterBuntingConnection extends Connection implements Lettere
     }
 
     @Override
-    @Environment(EnvType.CLIENT.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Screen createTextGUI() {
         return new EditLetteredConnectionScreen<>(this);
     }

@@ -19,7 +19,10 @@ public final class FLBlocks {
     public static <T extends Block> Supplier<T> register(String name, Supplier<T> blockSupplier) {
         Identifier id = new Identifier(FairyLightsMod.ModID, name);
         
-        return () -> Registry.register(Registry.BLOCK, id, blockSupplier.get());
+        return () -> {
+            FairyLightsMod.LOGGER.info("Registering block with id {}", id);
+            return Registry.register(Registry.BLOCK, id, blockSupplier.get());
+        };
     }
 
     public static final Supplier<FastenerBlock> FASTENER = register("fastener", () -> new FastenerBlock(AbstractBlock.Settings.of(Material.DECORATION)));

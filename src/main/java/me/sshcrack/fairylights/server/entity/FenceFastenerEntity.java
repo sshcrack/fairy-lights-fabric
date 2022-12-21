@@ -1,14 +1,14 @@
 package me.sshcrack.fairylights.server.entity;
 
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
 import me.sshcrack.fairylights.server.ServerProxy;
 import me.sshcrack.fairylights.server.block.FLBlocks;
 import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.fastener.Fastener;
 import me.sshcrack.fairylights.server.item.ConnectionItem;
+import me.sshcrack.fairylights.server.net.PacketList;
 import me.sshcrack.fairylights.server.net.clientbound.UpdateEntityFastenerMessage;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import me.sshcrack.fairylights.util.forge.capabilities.*;
+import me.sshcrack.fairylights.util.forge.util.LazyOptional;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -20,29 +20,20 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.network.Packet;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.util.Optional;
-
-public final class FenceFastenerEntity extends AbstractDecorationEntity/* implements IEntityAdditionalSpawnData*/ {
+public final class FenceFastenerEntity extends AbstractDecorationEntity implements CapabilityHelper<Entity> /* implements IEntityAdditionalSpawnData*/ {
     private int surfaceCheckTime;
 
     public FenceFastenerEntity(final EntityType<? extends FenceFastenerEntity> type, final World world) {
@@ -57,6 +48,8 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity/* implem
         this(world);
         this.setPos(pos.getX(), pos.getY(), pos.getZ());
 
+        this.provider = new CapabilityProvider<>(Entity.class, (Entity) (Object) this);
+        provider.gatherCapabilities();
     }
 
     @Override
@@ -180,8 +173,9 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity/* implem
                 this.dropItem(null);
                 this.remove(RemovalReason.DISCARDED);
             } else if (fastener.update() && !this.world.isClient()) {
-                final UpdateEntityFastenerMessage msg = new UpdateEntityFastenerMessage(this, fastener.serializeNBT());
-                ServerProxy.sendToPlayersWatchingEntity(msg, this);
+                    final UpdateEntityFastenerMessage msg = new UpdateEntityFastenerMessage(this, fastener.serializeNBT());
+                Identifier id = PacketList.getId(PacketList.S2C_UPDATE_ENTITY);
+                ServerProxy.sendToPlayersWatchingEntity(id, msg, this);
             }
         });
     }
@@ -211,27 +205,26 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity/* implem
     @Override
     public void writeCustomDataToNbt(final NbtCompound compound) {
         compound.put("pos", NbtHelper.fromBlockPos(this.getBlockPos()));
+
+        CapabilityDispatcher dispatcher = provider.getCapabilities();
+        if(dispatcher != null)
+            compound.put(CapabilityManager.NBT_IDENTIFIER, dispatcher.serializeNBT());
     }
 
     @Override
     public void readCustomDataFromNbt(final NbtCompound compound) {
         BlockPos pos = NbtHelper.toBlockPos(compound.getCompound("pos"));
         this.setPos(pos.getX(), pos.getY(), pos.getZ());
-    }
 
-    @Override
-    public void writeSpawnPacket(final PacketByteBuf buf) {
-        this.getFastener().ifPresent(fastener -> {
-            try {
-                NbtIo.write(fastener.serializeNBT(), new ByteBufOutputStream(buf));
-            } catch (final IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        CapabilityDispatcher dispatcher = provider.getCapabilities();
+        if(dispatcher != null) {
+            dispatcher.deserializeNBT(compound.getCompound(CapabilityManager.NBT_IDENTIFIER));
+        }
     }
-
+/* // TODO i dunno just removed it hopefully it works
     @Override
-    public void readSpawnData(final PacketByteBuf buf) {
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
         this.getFastener().ifPresent(fastener -> {
             try {
                 fastener.deserializeNBT(NbtIo.read(new ByteBufInputStream(buf), new NbtTagSizeTracker(0x200000)));
@@ -242,11 +235,35 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity/* implem
     }
 
     @Override
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        NbtCompound c = super.writeNbt(nbt);
+        this.getFastener().ifPresent(fastener -> {
+            try {
+
+                NbtIo.write(fastener.serializeNBT(), new ByteBufOutputStream(buf));
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return c;
+    }
+
+    @Override
+    public void writeSpawnPacket(final PacketByteBuf buf) {
+        moved to writeNbt
+    }
+
+    @Override
+    public void readSpawnData(final PacketByteBuf buf) {
+        moved to readNbt
+    }*/
+
+    @Override
     public Packet<?> createSpawnPacket() {
         return new EntitySpawnS2CPacket(this);
     }
 
-    private Optional<Fastener<?>> getFastener() {
+    private LazyOptional<Fastener<?>> getFastener() {
         return this.getCapability(CapabilityHandler.FASTENER_CAP);
     }
 
@@ -270,10 +287,24 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity/* implem
     @Nullable
     public static AbstractDecorationEntity findHanging(final World world, final BlockPos pos) {
         for (final AbstractDecorationEntity e : world.getEntitiesByClass(AbstractDecorationEntity.class, new Box(pos).expand(2), EntityPredicates.EXCEPT_SPECTATOR)) {
-            if (e.getPos().equals(pos)) {
+            if (e.getPos().equals(new Vec3d(pos.getX(), pos.getY(), pos.getZ()))) {
                 return e;
             }
         }
         return null;
+    }
+
+
+
+
+    private CapabilityProvider<Entity> provider;
+
+    @Override
+    public @NotNull CapabilityProvider<Entity> getProvider() {
+        return provider;
+    }
+
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
+        return provider.getCapability(cap);
     }
 }

@@ -1,19 +1,19 @@
 package me.sshcrack.fairylights.server.fastener;
 
-import net.minecraftforge.eventbus.api.Event;
+import me.sshcrack.fairylights.util.forge.events.Event;
 
 public class CreateBlockViewEvent extends Event {
-    private me.paulf.fairylights.server.fastener.BlockView view;
+    private BlockView view;
 
-    public CreateBlockViewEvent(final me.paulf.fairylights.server.fastener.BlockView view) {
+    public CreateBlockViewEvent(final BlockView view) {
         this.view = view;
     }
 
-    public me.paulf.fairylights.server.fastener.BlockView getView() {
+    public BlockView getView() {
         return this.view;
     }
 
-    public void setView(final me.paulf.fairylights.server.fastener.BlockView view) {
+    public void setView(final BlockView view) {
         this.view = view;
     }
 }

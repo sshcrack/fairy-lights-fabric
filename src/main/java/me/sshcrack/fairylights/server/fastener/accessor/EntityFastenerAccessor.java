@@ -3,6 +3,8 @@ package me.sshcrack.fairylights.server.fastener.accessor;
 import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.fastener.EntityFastener;
 import me.sshcrack.fairylights.server.fastener.Fastener;
+import me.sshcrack.fairylights.util.forge.capabilities.CapabilityHelper;
+import me.sshcrack.fairylights.util.forge.util.LazyOptional;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
@@ -12,6 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -44,7 +47,7 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
     }
 
     @Override
-    public Optional<Fastener<?>> get(final World world, final boolean load) {
+    public @NotNull LazyOptional<Fastener<?>> get(final World world, final boolean load) {
         if (this.entity == null) {
             if (world instanceof ServerWorld) {
                 final Entity e = ((ServerWorld) world).getEntity(this.uuid);
@@ -63,14 +66,14 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
         }
         if (this.entity != null && this.entity.world == world) {
             this.pos = this.entity.getPos();
-            return this.entity.getCapability(CapabilityHandler.FASTENER_CAP);
+            return ((CapabilityHelper<?>)this.entity).getCapability(CapabilityHandler.FASTENER_CAP);
         }
-        return Optional.empty();
+        return LazyOptional.empty();
     }
 
     @Override
     public boolean isGone(final World world) {
-        return !world.isClient() && this.entity != null && (!this.entity.getCapability(CapabilityHandler.FASTENER_CAP).isPresent() || this.entity.world != world);
+        return !world.isClient() && this.entity != null && (!((CapabilityHelper<?>)this.entity).getCapability(CapabilityHandler.FASTENER_CAP).isPresent() || this.entity.world != world);
     }
 
     @Override

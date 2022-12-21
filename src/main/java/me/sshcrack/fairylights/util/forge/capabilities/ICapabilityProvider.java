@@ -8,8 +8,6 @@ package me.sshcrack.fairylights.util.forge.capabilities;
 import me.sshcrack.fairylights.util.forge.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
-
 public interface ICapabilityProvider
 {
     /**

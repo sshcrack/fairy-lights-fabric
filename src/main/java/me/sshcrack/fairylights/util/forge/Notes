@@ -9,3 +9,6 @@ load = readNbt
 getUpdateTag = toInitialChunkDataNbt
 
 --- End ----
+
+Clientbound = S2C
+Serverbound = C2S

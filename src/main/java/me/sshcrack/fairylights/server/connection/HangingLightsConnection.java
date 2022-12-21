@@ -14,6 +14,7 @@ import me.sshcrack.fairylights.server.jingle.JinglePlayer;
 import me.sshcrack.fairylights.server.sound.FLSounds;
 import me.sshcrack.fairylights.server.string.StringType;
 import me.sshcrack.fairylights.server.string.StringTypes;
+import me.sshcrack.fairylights.util.forge.capabilities.CapabilityHelper;
 import me.sshcrack.fairylights.util.forge.items.ItemHandlerHelper;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LightBlock;
@@ -24,6 +25,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
@@ -77,7 +79,7 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
     }
 
     @Override
-    public boolean interact(final PlayerEntity player, final Vec3d hit, final FeatureType featureType, final int feature, final ItemStack heldStack, final InteractionHand hand) {
+    public boolean interact(final PlayerEntity player, final Vec3d hit, final FeatureType featureType, final int feature, final ItemStack heldStack, final Hand hand) {
         if (featureType == FEATURE && heldStack.isIn(FLCraftingRecipes.LIGHTS)) {
             final int index = feature % this.pattern.size();
             final ItemStack light = this.pattern.get(index);
@@ -151,7 +153,7 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
     @Override
     protected Light<?> createFeature(final int index, final Vec3d point, final float yaw, final float pitch) {
         final ItemStack lightData = this.getPatternStack(index);
-        return this.createLight(index, point, yaw, pitch, lightData, LightVariant.get(lightData).orElse(SimpleLightVariant.FAIRY_LIGHT));
+        return this.createLight(index, point, yaw, pitch, lightData, LightVariant.get((CapabilityHelper<?>) (Object) lightData).orElse(SimpleLightVariant.FAIRY_LIGHT));
     }
 
     private ItemStack getPatternStack(final int index) {
@@ -179,7 +181,8 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
         }
         float spacing = 0;
         for (final ItemStack patternLightData : this.pattern) {
-            final float lightSpacing = LightVariant.get(patternLightData).orElse(SimpleLightVariant.FAIRY_LIGHT).getSpacing();
+            @SuppressWarnings("unchecked")
+            final float lightSpacing = LightVariant.get((CapabilityHelper<ItemStack>) (Object)patternLightData).orElse(SimpleLightVariant.FAIRY_LIGHT).getSpacing();
             if (lightSpacing > spacing) {
                 spacing = lightSpacing;
             }
@@ -271,7 +274,7 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
         HangingLightsConnectionItem.setString(compound, this.string);
         final NbtList tagList = new NbtList();
         for (final ItemStack light : this.pattern) {
-            tagList.add(light.save(new NbtCompound()));
+            tagList.add(light.writeNbt(new NbtCompound()));
         }
         compound.put("pattern", tagList);
         return compound;
@@ -281,11 +284,11 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
     public void deserializeLogic(final NbtCompound compound) {
         super.deserializeLogic(compound);
         this.string = HangingLightsConnectionItem.getString(compound);
-        final NbtList patternList = compound.getList("pattern", Tag.TAG_COMPOUND);
+        final NbtList patternList = compound.getList("pattern", NbtCompound.COMPOUND_TYPE);
         this.pattern = new ArrayList<>();
         for (int i = 0; i < patternList.size(); i++) {
             final NbtCompound lightCompound = patternList.getCompound(i);
-            this.pattern.add(ItemStack.of(lightCompound));
+            this.pattern.add(ItemStack.fromNbt(lightCompound));
         }
     }
 }

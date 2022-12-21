@@ -17,6 +17,7 @@ import me.sshcrack.fairylights.util.Curve;
 import me.sshcrack.fairylights.util.forge.events.RenderHighlightEvent;
 import me.sshcrack.fairylights.util.forge.events.annotations.SubscribeEvent;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -62,7 +63,7 @@ public final class ClientEventHandler {
         }
         return null;
     }
-
+/*
     public void renderOverlay(final ForgeGui gui, final MatrixStack poseStack, final float partialTick, final int screenWidth, final int screenHeight) {
         final Connection conn = getHitConnection();
         if (!(conn instanceof HangingLightsConnection)) {
@@ -81,11 +82,11 @@ public final class ClientEventHandler {
                 final int lineHeight = gui.getFont().lineHeight;
                 final int textWidth = gui.getFont().width(line);
                 final int y = 2 + lineHeight * i;
-                GuiComponent.fill(poseStack, 1, y - 1, 2 + textWidth + 1, y + lineHeight - 1, 0x90505050);
+                DrawableHelper.fill(poseStack, 1, y - 1, 2 + textWidth + 1, y + lineHeight - 1, 0x90505050);
                 gui.getFont().draw(poseStack, line, 2, y, 0xe0e0e0);
             }
         }
-    }
+    }*/
 
     public static void updateHitConnection() {
         final MinecraftClient mc = MinecraftClient.getInstance();
@@ -113,8 +114,7 @@ public final class ClientEventHandler {
         final Set<Fastener<?>> fasteners = Sets.newLinkedHashSet();
         final CollectFastenersEvent event = new CollectFastenersEvent(world, bounds, fasteners);
         world.getEntitiesByClass(FenceFastenerEntity.class, bounds, EntityPredicates.EXCEPT_SPECTATOR)
-                //TODO fix capability things here
-                .forEach(e -> event.accept(e));
+                .forEach(event::accept);
         final int minX = MathHelper.floor(bounds.minX / 16.0D);
         final int maxX = MathHelper.ceil(bounds.maxX / 16.0D);
         final int minZ = MathHelper.floor(bounds.minZ / 16.0D);

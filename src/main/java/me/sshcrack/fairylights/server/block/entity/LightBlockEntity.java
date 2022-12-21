@@ -6,6 +6,7 @@ import me.sshcrack.fairylights.server.item.LightVariant;
 import me.sshcrack.fairylights.server.item.SimpleLightVariant;
 import me.sshcrack.fairylights.server.sound.FLSounds;
 import me.sshcrack.fairylights.util.FLMth;
+import me.sshcrack.fairylights.util.forge.capabilities.CapabilityHelper;
 import me.sshcrack.fairylights.util.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -27,7 +28,7 @@ public class LightBlockEntity extends BlockEntity {
     private boolean on = true;
 
     public LightBlockEntity(BlockPos pos, BlockState state) {
-        super(FLBlockEntities.LIGHT, pos, state);
+        super(FLBlockEntities.LIGHT.get(), pos, state);
         this.light = new Light<>(0, Vec3d.ZERO, 0.0F, 0.0F, ItemStack.EMPTY, SimpleLightVariant.FAIRY_LIGHT, 0.0F);
     }
 
@@ -36,7 +37,7 @@ public class LightBlockEntity extends BlockEntity {
     }
 
     public void setItemStack(final ItemStack stack) {
-        this.light = new Light<>(0, Vec3d.ZERO, 0.0F, 0.0F, stack, LightVariant.get(stack).orElse(SimpleLightVariant.FAIRY_LIGHT), 0.0F);
+        this.light = new Light<>(0, Vec3d.ZERO, 0.0F, 0.0F, stack, LightVariant.get((CapabilityHelper<?>)(Object)stack).orElse(SimpleLightVariant.FAIRY_LIGHT), 0.0F);
         this.markDirty();
     }
 

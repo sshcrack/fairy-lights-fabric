@@ -1,15 +1,22 @@
 package me.sshcrack.fairylights.util;
 
 import me.sshcrack.fairylights.util.forge.capabilities.Capability;
+import me.sshcrack.fairylights.util.forge.capabilities.CapabilityHelper;
+import me.sshcrack.fairylights.util.forge.capabilities.CapabilityProvider;
 import me.sshcrack.fairylights.util.forge.capabilities.ICapabilityProvider;
-import net.minecraft.util.math.Direction;
-import org.jetbrains.annotations.Nullable;
+import me.sshcrack.fairylights.util.forge.util.LazyOptional;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public final class EmptyProvider implements ICapabilityProvider {
+public final class EmptyProvider<U> implements CapabilityHelper<U> {
     @Override
-    public <T> Optional<T> getCapability(final Capability<T> cap) {
-        return Optional.empty();
+    public @NotNull CapabilityProvider<U> getProvider() {
+        return null;
+    }
+
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(final @NotNull Capability<T> cap) {
+        return LazyOptional.empty();
     }
 }

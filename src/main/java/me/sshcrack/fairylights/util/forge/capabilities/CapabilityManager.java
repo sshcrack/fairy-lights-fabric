@@ -15,7 +15,7 @@ public class CapabilityManager {
         return listenerMap.get(id);
     }
 
-    public static <T extends ICapabilitySerializable<NbtCompound>> Capability<T> of(Identifier id, Class<? extends ICapabilitySerializable<NbtCompound>> capClass) {
+    public static <T extends ICapabilitySerializable<NbtCompound>, K extends ICapabilitySerializable<NbtCompound>> Capability<T> of(Identifier id, Class<K> capClass) {
             listenerMap.put(id.getPath(), capClass);
             return new Capability<>(id.getPath());
     }

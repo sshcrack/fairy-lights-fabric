@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
-	@Inject(at = @At("HEAD"), method = "init()V")
+	@Inject(at = @At("HEAD"), method = "updateTargetedEntity")
 	private void init(CallbackInfo info) {
 		ClientEventHandler.updateHitConnection();
 	}

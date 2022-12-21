@@ -29,9 +29,9 @@ public class LightItem extends BlockItem {
     }
 
     //TODO
-    public ICapabilityProvider initCapabilities(final ItemStack stack, @Nullable final NbtCompound nbt) {
+/*    public ICapabilityProvider initCapabilities(final ItemStack stack, @Nullable final NbtCompound nbt) {
         return LightVariant.provider(this.light.getVariant());
-    }
+    }*/
 
     @Override
     public void appendTooltip(final ItemStack stack, @Nullable final World world, final List<Text> tooltip, final TooltipContext flag) {

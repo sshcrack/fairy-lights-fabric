@@ -27,9 +27,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -110,7 +109,7 @@ public class SimpleConfig {
         Files.createFile( request.file.toPath() );
 
         // write default config data
-        PrintWriter writer = new PrintWriter(request.file, "UTF-8");
+        PrintWriter writer = new PrintWriter(request.file, StandardCharsets.UTF_8);
         writer.write( request.getConfig() );
         writer.close();
 
@@ -123,7 +122,7 @@ public class SimpleConfig {
         }
     }
 
-    // Modification by Kaupenjoe
+
     private void parseConfigEntry( String entry, int line ) {
         if( !entry.isEmpty() && !entry.startsWith( "#" ) ) {
             String[] parts = entry.split("=", 2);
@@ -175,6 +174,36 @@ public class SimpleConfig {
     @Deprecated
     public String get( String key ) {
         return config.get( key );
+    }
+
+    /**
+     * Sets the specified key to the value
+     */
+    public void set(String key, String value) {
+        config.put(key, value);
+    }
+
+
+    /**
+     * Sets the specified key to the value
+     */
+    public void set(String key, boolean value) {
+        config.put(key, value ? "true" : "false");
+    }
+
+
+    /**
+     * Sets the specified key to the value
+     */
+    public void set(String key, int value) {
+        config.put(key, String.valueOf(value));
+    }
+
+    /**
+     * Sets the specified key to the value
+     */
+    public void set(String key, double value) {
+        config.put(key, String.valueOf(value));
     }
 
     /**

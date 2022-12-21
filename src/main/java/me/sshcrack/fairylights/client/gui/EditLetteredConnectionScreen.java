@@ -7,8 +7,13 @@ import me.sshcrack.fairylights.client.gui.component.StyledTextFieldWidget;
 import me.sshcrack.fairylights.client.gui.component.ToggleButton;
 import me.sshcrack.fairylights.server.connection.Connection;
 import me.sshcrack.fairylights.server.connection.Lettered;
+import me.sshcrack.fairylights.server.net.Message;
+import me.sshcrack.fairylights.server.net.PacketList;
+import me.sshcrack.fairylights.server.net.PacketUtil;
+import me.sshcrack.fairylights.server.net.serverbound.EditLetteredConnectionMessage;
 import me.sshcrack.fairylights.util.styledstring.StyledString;
 import me.sshcrack.fairylights.util.styledstring.StylingPresence;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -52,10 +57,11 @@ public final class EditLetteredConnectionScreen<C extends Connection & Lettered>
         final int pad = 4;
         final int buttonWidth = 150;
         this.doneBtn = this.addDrawable(new ButtonWidget(this.width / 2 - pad - buttonWidth, this.height / 4 + 120 + 12, buttonWidth, 20, Text.translatable("gui.done"), b -> {
-            FairyLightsMod.NETWORK.sendToServer(new EditLetteredConnectionMessage<>(this.connection, this.textField.getValue()));
-            this.onClose();
+            Message msg = new EditLetteredConnectionMessage<>(this.connection, this.textField.getValue());
+            ClientPlayNetworking.send(PacketList.getId(PacketList.C2S_EDIT_LETTERED), PacketUtil.msgToBuf(msg));
+            this.close();
         }));
-        this.cancelBtn = this.addDrawable(new ButtonWidget(this.width / 2 + pad, this.height / 4 + 120 + 12, buttonWidth, 20, Text.translatable("gui.cancel"), b -> this.onClose()));
+        this.cancelBtn = this.addDrawable(new ButtonWidget(this.width / 2 + pad, this.height / 4 + 120 + 12, buttonWidth, 20, Text.translatable("gui.cancel"), b -> this.close()));
         final int textFieldX = this.width / 2 - 150;
         final int textFieldY = this.height / 2 - 10;
         int buttonX = textFieldX;

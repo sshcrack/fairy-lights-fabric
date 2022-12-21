@@ -1,6 +1,7 @@
 package me.sshcrack.fairylights.server.fastener;
 
 import me.sshcrack.fairylights.server.capability.CapabilityHandler;
+import me.sshcrack.fairylights.util.forge.capabilities.CapabilityHelper;
 import me.sshcrack.fairylights.util.forge.capabilities.ICapabilityProvider;
 import me.sshcrack.fairylights.util.forge.events.Event;
 import net.minecraft.block.entity.BlockEntity;
@@ -50,7 +51,13 @@ public class CollectFastenersEvent extends Event {
         }
     }
 
-    public void accept(final ICapabilityProvider provider) {
+    //TODO maybe try to fix?
+    @SuppressWarnings("unchecked")
+    public void accept(final BlockEntity entity) {
+        this.accept((CapabilityHelper<BlockEntity>) entity);
+    }
+
+    public void accept(final CapabilityHelper<?> provider) {
         provider.getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(this::accept);
     }
 

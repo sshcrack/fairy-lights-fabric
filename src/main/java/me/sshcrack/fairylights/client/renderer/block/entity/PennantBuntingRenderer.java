@@ -41,13 +41,13 @@ public class PennantBuntingRenderer extends ConnectionRenderer<PennantBuntingCon
 
     private static final ModelIdentifier SQUARE_MODEL = new ModelIdentifier(FairyLightsMod.ModID, "entity/square_pennant");
 
-    public static final ImmutableSet<Identifier> MODELS = ImmutableSet.of(TRIANGLE_MODEL, SPEARHEAD_MODEL, SWALLOWTAIL_MODEl, SQUARE_MODEL);
+    public static final ImmutableSet<ModelIdentifier> MODELS = ImmutableSet.of(TRIANGLE_MODEL, SPEARHEAD_MODEL, SWALLOWTAIL_MODEl, SQUARE_MODEL);
 
     private final ImmutableMap<Item, ModelIdentifier> models = ImmutableMap.of(
-        FLItems.TRIANGLE_PENNANT, TRIANGLE_MODEL,
-        FLItems.SPEARHEAD_PENNANT, SPEARHEAD_MODEL,
-        FLItems.SWALLOWTAIL_PENNANT, SWALLOWTAIL_MODEl,
-        FLItems.SQUARE_PENNANT, SQUARE_MODEL
+        FLItems.TRIANGLE_PENNANT.get(), TRIANGLE_MODEL,
+        FLItems.SPEARHEAD_PENNANT.get(), SPEARHEAD_MODEL,
+        FLItems.SWALLOWTAIL_PENNANT.get(), SWALLOWTAIL_MODEl,
+        FLItems.SQUARE_PENNANT.get(), SQUARE_MODEL
     );
 
     public PennantBuntingRenderer(final Function<EntityModelLayer, ModelPart> baker) {

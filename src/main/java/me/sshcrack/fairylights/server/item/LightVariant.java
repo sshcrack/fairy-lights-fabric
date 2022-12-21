@@ -1,20 +1,17 @@
 package me.sshcrack.fairylights.server.item;
 
 import me.sshcrack.fairylights.FairyLightsMod;
-import me.sshcrack.fairylights.server.fastener.Fastener;
 import me.sshcrack.fairylights.server.feature.light.LightBehavior;
 import me.sshcrack.fairylights.util.EmptyProvider;
 import me.sshcrack.fairylights.util.SimpleProvider;
-import me.sshcrack.fairylights.util.forge.capabilities.Capability;
-import me.sshcrack.fairylights.util.forge.capabilities.CapabilityManager;
-import me.sshcrack.fairylights.util.forge.capabilities.ICapabilityProvider;
+import me.sshcrack.fairylights.util.forge.capabilities.*;
+import me.sshcrack.fairylights.util.forge.util.LazyOptional;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 
-import java.util.Optional;
-
-public interface LightVariant<T extends LightBehavior> {
+public interface LightVariant<T extends LightBehavior> extends ICapabilitySerializable<NbtCompound> {
     final class Holder {
         public static final Capability<LightVariant<?>> CAPABILITY = CapabilityManager.of(new Identifier(FairyLightsMod.ModID, "light_fastener_cap"), LightVariant.class);
     }
@@ -31,11 +28,7 @@ public interface LightVariant<T extends LightBehavior> {
 
     boolean isOrientable();
 
-    static Optional<LightVariant<?>> get(final ICapabilityProvider provider) {
+    static LazyOptional<LightVariant<?>> get(final CapabilityHelper<?> provider) {
         return provider.getCapability(Holder.CAPABILITY);
-    }
-
-    static ICapabilityProvider provider(final LightVariant<?> variant) {
-        return Holder.CAPABILITY == null ? new EmptyProvider() : new SimpleProvider<>(Holder.CAPABILITY, variant);
     }
 }

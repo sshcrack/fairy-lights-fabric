@@ -7,8 +7,6 @@ public final class FLConfig {
     public static SimpleConfig CONFIG;
     private static ModConfigProvider configs;
 
-    public static boolean JINGLE_ENABLED;
-    public static int JINGLE_AMPLITUDE;
 
     private FLConfig() {}
 
@@ -21,10 +19,21 @@ public final class FLConfig {
 
 
     private static void createConfigs() {
-        configs.addKeyValuePair(new Pair<>("config.fairylights.christmas_jingles", "Just a Testing string!"), "String");
-        configs.addKeyValuePair(new Pair<>("config.fairylights.jingle_amplitude", 40), "int");
+        configs.addKeyValuePair(new Pair<>("config.fairylights.christmas_jingles", true), "If true jingles will play during Christmas.");
+        configs.addKeyValuePair(new Pair<>("config.fairylights.jingle_amplitude", 40), "The distance that jingles can be heard in blocks.");
+        // TODO
+        //configs.addKeyValuePair(new Pair<>("config.fairylights.tutorial.progress", "none"), "The hanging lights tutorial progress, once any light item enters the inventory a toast appears prompting to craft hanging lights. A finished tutorial progress value is 'complete' and an unstarted tutorial is 'none'.");
     }
 
+    // TODO
+    /*
+    public static String getTutorialProgress() {
+        return CONFIG.getOrDefault("config.fairylights.tutorial.progress", "none");
+    }
+
+    public static void setTutorialProgress(String prog) {
+    }
+ */
 
     public static boolean isJingleEnabled() {
         return CONFIG.getOrDefault("config.fairylights.christmas_jingles", false);

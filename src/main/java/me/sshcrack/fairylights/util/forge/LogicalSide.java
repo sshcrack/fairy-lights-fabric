@@ -1,4 +1,4 @@
-package me.sshcrack.fairylights.util.forge.network;
+package me.sshcrack.fairylights.util.forge;
 import net.fabricmc.api.EnvType;
 
 public enum LogicalSide

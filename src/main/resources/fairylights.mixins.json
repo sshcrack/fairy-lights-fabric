@@ -4,10 +4,16 @@
   "package": "me.sshcrack.fairylights.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "BakedModelManagerMixin",
     "BlockEntityMixin",
+    "ClientConnectionMixin",
+    "EntityMixin",
+    "ItemStackMixin",
     "ReloadListenerMixin"
   ],
   "client": [
+    "BakedModelManagerMixin",
+    "ClientWorldMixin",
     "GameRendererMixin"
   ],
   "injectors": {

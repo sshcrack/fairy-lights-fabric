@@ -6,7 +6,11 @@ import me.sshcrack.fairylights.server.fastener.accessor.BlockFastenerAccessor;
 import me.sshcrack.fairylights.server.fastener.accessor.EntityFastenerAccessor;
 import me.sshcrack.fairylights.util.forge.capabilities.Capability;
 import me.sshcrack.fairylights.util.forge.capabilities.CapabilityManager;
+import me.sshcrack.fairylights.util.forge.capabilities.ICapabilitySerializable;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
+
+import java.util.function.Supplier;
 
 public final class CapabilityHandler {
     private CapabilityHandler() {}

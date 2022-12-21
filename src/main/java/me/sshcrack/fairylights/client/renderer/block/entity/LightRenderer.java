@@ -1,6 +1,7 @@
 package me.sshcrack.fairylights.client.renderer.block.entity;
 
 import com.google.common.collect.ImmutableMap;
+import me.sshcrack.fairylights.client.ClientProxy;
 import me.sshcrack.fairylights.client.FLModelLayers;
 import me.sshcrack.fairylights.client.model.light.*;
 import me.sshcrack.fairylights.server.feature.light.Light;
@@ -9,7 +10,9 @@ import me.sshcrack.fairylights.server.item.LightVariant;
 import me.sshcrack.fairylights.server.item.SimpleLightVariant;
 import me.sshcrack.fairylights.util.FLMth;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -75,7 +78,8 @@ public class LightRenderer {
     }
 
     public Data start(final VertexConsumerProvider source) {
-        final VertexConsumer buf = ClientProxy.TRANSLUCENT_TEXTURE.buffer(source, ForgeRenderTypes::getUnsortedTranslucent);
+        // TODO dunno just guessed the RenderLayer thing
+        final VertexConsumer buf = ClientProxy.TRANSLUCENT_TEXTURE.getVertexConsumer(source, RenderLayer::getEntityTranslucent);
         ForwardingVertexConsumer translucent = new ForwardingVertexConsumer() {
             @Override
             protected VertexConsumer delegate() {

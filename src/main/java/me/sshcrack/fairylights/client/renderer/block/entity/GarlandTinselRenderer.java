@@ -1,5 +1,6 @@
 package me.sshcrack.fairylights.client.renderer.block.entity;
 
+import me.sshcrack.fairylights.client.ClientProxy;
 import me.sshcrack.fairylights.client.FLModelLayers;
 import me.sshcrack.fairylights.server.connection.GarlandTinselConnection;
 import me.sshcrack.fairylights.util.Catenary;
@@ -46,7 +47,7 @@ public class GarlandTinselRenderer extends ConnectionRenderer<GarlandTinselConne
         final int rings = MathHelper.ceil(length * 64);
         final int hash = connection.getUUID().hashCode();
         final int index = it.getIndex();
-        final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.buffer(source, RenderLayer::getEntityCutout);
+        final VertexConsumer buf = ClientProxy.SOLID_TEXTURE.getVertexConsumer(source, RenderLayer::getEntityCutout);
         for (int i = 0; i < rings; i++) {
             final double t = i / (float) rings * length;
             matrix.push();

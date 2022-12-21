@@ -4,12 +4,14 @@ import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.fastener.BlockFastener;
 import me.sshcrack.fairylights.server.fastener.Fastener;
 import me.sshcrack.fairylights.server.fastener.FastenerType;
+import me.sshcrack.fairylights.util.forge.capabilities.CapabilityHelper;
+import me.sshcrack.fairylights.util.forge.util.LazyOptional;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.util.Lazy;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -28,21 +30,21 @@ public final class BlockFastenerAccessor implements FastenerAccessor {
     }
 
     @Override
-    public Optional<Fastener<?>> get(final World world, final boolean load) {
+    public @NotNull LazyOptional<Fastener<?>> get(final World world, final boolean load) {
         if (load || world.isChunkLoaded(this.pos)) {
             final BlockEntity entity = world.getBlockEntity(this.pos);
             if (entity != null) {
-                return entity.getCapability(CapabilityHandler.FASTENER_CAP);
+                return ((CapabilityHelper<?>) entity).getCapability(CapabilityHandler.FASTENER_CAP);
             }
         }
-        return Optional.empty();
+        return LazyOptional.empty();
     }
 
     @Override
     public boolean isGone(final World world) {
         if (world.isClient() || !world.isChunkLoaded(this.pos)) return false;
         final BlockEntity entity = world.getBlockEntity(this.pos);
-        return entity == null || !entity.getCapability(CapabilityHandler.FASTENER_CAP).isPresent();
+        return entity == null || !((CapabilityHelper<?>)entity).getCapability(CapabilityHandler.FASTENER_CAP).isPresent();
     }
 
     @Override

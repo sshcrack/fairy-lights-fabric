@@ -9,6 +9,7 @@ import me.sshcrack.fairylights.server.fastener.accessor.FastenerAccessor;
 import me.sshcrack.fairylights.util.BoxBuilder;
 import me.sshcrack.fairylights.util.Curve;
 import me.sshcrack.fairylights.util.forge.capabilities.Capability;
+import me.sshcrack.fairylights.util.forge.util.LazyOptional;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -16,6 +17,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -29,6 +31,7 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
     protected Box bounds = new Box(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 
     @Nullable
+
     private World world;
 
     private boolean dirty;
@@ -309,29 +312,22 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
         this.setDirty();
     }
 
-    private final Optional<Fastener<?>> lazyOptional = Optional.of(this);
+    private final LazyOptional<Fastener<?>> lazyOptional = LazyOptional.of(() -> this);
 
     @Override
-    public <T> Optional<T> getCapability(final Capability<T> capability) {
-        return capability == CapabilityHandler.FASTENER_CAP ? (Optional<T>) this.lazyOptional : Optional.empty();
+    @SuppressWarnings("unchecked")
+    public @NotNull <T> LazyOptional<T> getCapability(final @NotNull Capability<T> capability) {
+        return capability == CapabilityHandler.FASTENER_CAP ? (LazyOptional<T>) this.lazyOptional : LazyOptional.empty();
     }
 
-    static class Incoming {
-        final FastenerAccessor fastener;
-
-        final UUID id;
-
-        Incoming(final FastenerAccessor fastener, final UUID id) {
-            this.fastener = fastener;
-            this.id = id;
-        }
+    record Incoming(FastenerAccessor fastener, UUID id) {
 
         boolean gone(final World world) {
             return this.fastener.isGone(world);
         }
 
         Optional<Connection> get(final World world) {
-            return this.fastener.get(world, false).flatMap(f -> f.get(this.id));
+            return this.fastener.get(world, false).resolve().flatMap(f -> f.get(this.id));
         }
     }
 }

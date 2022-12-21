@@ -1,8 +1,9 @@
 package me.sshcrack.fairylights.server.fastener.accessor;
 
-import me.paulf.fairylights.server.entity.FenceFastenerEntity;
-import me.paulf.fairylights.server.fastener.EntityFastener;
-import me.paulf.fairylights.server.fastener.FastenerType;
+
+import me.sshcrack.fairylights.server.entity.FenceFastenerEntity;
+import me.sshcrack.fairylights.server.fastener.EntityFastener;
+import me.sshcrack.fairylights.server.fastener.FastenerType;
 
 public final class FenceFastenerAccessor extends EntityFastenerAccessor<FenceFastenerEntity> {
     public FenceFastenerAccessor() {

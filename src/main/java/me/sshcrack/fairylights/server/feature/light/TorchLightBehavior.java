@@ -41,9 +41,9 @@ public class TorchLightBehavior implements BrightnessLightBehavior {
     private void createParticles(final World world, final Vec3d origin, final Light<?> light) {
         if (this.powered) {
             final Vec3d p = light.getTransformedPoint(origin, new Vec3d(0.0D, -this.offset, 0.0D));
-            final double x = p.x();
-            final double y = p.y();
-            final double z = p.z();
+            final double x = p.getX();
+            final double y = p.getY();
+            final double z = p.getZ();
             world.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0D, 0.0D, 0.0D);
             world.addParticle(ParticleTypes.FLAME, x, y, z, 0.0D, 0.0D, 0.0D);
         }

@@ -5,7 +5,9 @@ import me.sshcrack.fairylights.server.block.entity.FLBlockEntities;
 import me.sshcrack.fairylights.server.block.entity.FastenerBlockEntity;
 import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.connection.HangingLightsConnection;
+import me.sshcrack.fairylights.server.event.ServerEventHandler;
 import me.sshcrack.fairylights.server.fastener.accessor.BlockFastenerAccessor;
+import me.sshcrack.fairylights.util.forge.capabilities.CapabilityHelper;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -118,7 +120,7 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
         if (!state.isOf(newState.getBlock())) {
             final BlockEntity entity = world.getBlockEntity(pos);
             if (entity instanceof FastenerBlockEntity) {
-                entity.getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(f -> f.dropItems(world, pos));
+                ((CapabilityHelper<?>)entity).getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(f -> f.dropItems(world, pos));
             }
             super.onStateReplaced(state, world, pos, newState, isMoving);
         }
@@ -129,7 +131,7 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
         final Direction facing = state.get(FACING);
         final BlockPos attachedPos = pos.offset(facing.getOpposite());
         final BlockState attachedState = world.getBlockState(attachedPos);
-        return attachedState.isIn(BlockTags.LEAVES) || attachedState.isSideSolidFullSquare(world, attachedPos, facing) || facing == Direction.UP && attachedState.is(BlockTags.WALLS);
+        return attachedState.isIn(BlockTags.LEAVES) || attachedState.isSideSolidFullSquare(world, attachedPos, facing) || facing == Direction.UP && attachedState.isIn(BlockTags.WALLS);
     }
 
     @Nullable
@@ -176,15 +178,13 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
     public int getComparatorOutput(final BlockState state, final World world, final BlockPos pos) {
         final BlockEntity entity = world.getBlockEntity(pos);
         if (entity == null) return super.getComparatorOutput(state, world, pos);
-        return entity.getCapability(CapabilityHandler.FASTENER_CAP).map(f -> f.getAllConnections().stream()).orElse(Stream.empty())
+        return ((CapabilityHelper<?>)entity).getCapability(CapabilityHandler.FASTENER_CAP).map(f -> f.getAllConnections().stream()).orElse(Stream.empty())
             .filter(HangingLightsConnection.class::isInstance)
             .map(HangingLightsConnection.class::cast)
             .mapToInt(c -> (int) Math.ceil(c.getJingleProgress() * 15))
             .max().orElse(0);
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
     public void tick(final BlockState state, final ServerWorld world, final BlockPos pos, final Random random) {
         this.jingle(world, pos);
     }
@@ -194,12 +194,14 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
         if (!(entity instanceof FastenerBlockEntity)) {
             return;
         }
-        entity.getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(fastener -> fastener.getAllConnections().stream()
+        //TODO
+        /*
+        ((CapabilityHelper<?>)entity).getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(fastener -> fastener.getAllConnections().stream()
             .filter(HangingLightsConnection.class::isInstance)
             .map(HangingLightsConnection.class::cast)
             .filter(conn -> conn.canCurrentlyPlayAJingle() && conn.isDestination(new BlockFastenerAccessor(fastener.getPos())) && world.getBlockState(fastener.getPos()).getValue(TRIGGERED))
             .findFirst().ifPresent(conn -> ServerEventHandler.tryJingle(world, conn))
-        );
+        );*/
     }
 
     public Vec3d getOffset(final Direction facing, final float offset) {

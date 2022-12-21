@@ -1,5 +1,6 @@
 package me.sshcrack.fairylights.util;
 
+import me.sshcrack.fairylights.server.connection.Connection;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 

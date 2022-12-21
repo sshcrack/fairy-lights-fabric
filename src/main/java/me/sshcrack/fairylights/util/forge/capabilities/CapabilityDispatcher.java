@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) Forge Development LLC and contributors
  * SPDX-License-Identifier: LGPL-2.1-only
@@ -12,6 +11,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -26,14 +26,14 @@ import java.util.Map;
  * our handlers using normal if statements.
  *
  * Internally the handlers are baked into arrays for fast iteration.
- * The ResourceLocations will be used for the NBT Key when serializing.
+ * The Identifiers will be used for the NBT Key when serializing.
  */
 @MethodsReturnNonnullByDefault
 public final class CapabilityDispatcher implements INBTSerializable<NbtCompound>, ICapabilityProvider
 {
-    private ICapabilityProvider[] caps;
-    private INBTSerializable<NbtElement>[] writers;
-    private String[] names;
+    private final ICapabilityProvider[] caps;
+    private final INBTSerializable<NbtElement>[] writers;
+    private final String[] names;
     private final List<Runnable> listeners;
 
     public CapabilityDispatcher(Map<Identifier, ICapabilityProvider> list, List<Runnable> listeners)
@@ -77,7 +77,7 @@ public final class CapabilityDispatcher implements INBTSerializable<NbtCompound>
 
 
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap)
+    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap)
     {
         for (ICapabilityProvider c : caps)
         {

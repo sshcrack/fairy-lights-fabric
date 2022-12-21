@@ -12,8 +12,13 @@ import me.sshcrack.fairylights.server.fastener.accessor.FastenerAccessor;
 import me.sshcrack.fairylights.server.feature.Feature;
 import me.sshcrack.fairylights.server.feature.FeatureType;
 import me.sshcrack.fairylights.server.item.ConnectionItem;
+import me.sshcrack.fairylights.server.net.Message;
+import me.sshcrack.fairylights.server.net.PacketList;
+import me.sshcrack.fairylights.server.net.PacketUtil;
+import me.sshcrack.fairylights.server.net.serverbound.InteractionConnectionMessage;
 import me.sshcrack.fairylights.server.sound.FLSounds;
 import me.sshcrack.fairylights.util.*;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -21,8 +26,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -179,7 +186,11 @@ public abstract class Connection implements NBTSerializable {
     }
 
     public void processClientAction(final PlayerEntity player, final PlayerAction action, final Intersection intersection) {
-        FairyLightsMod.NETWORK.sendToServer(new InteractionConnectionMessage(this, action, intersection));
+        Message msg = new InteractionConnectionMessage(this, action, intersection);
+        Identifier id = PacketList.getId(PacketList.C2S_INTERACTION);
+        PacketByteBuf buf = PacketUtil.msgToBuf(msg);
+
+        ClientPlayNetworking.send(id, buf);
     }
 
     public void disconnect(final PlayerEntity player, final Vec3d hit) {

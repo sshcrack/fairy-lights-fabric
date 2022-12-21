@@ -2,15 +2,18 @@ package me.sshcrack.fairylights.server.item;
 
 import me.sshcrack.fairylights.server.block.FLBlocks;
 import me.sshcrack.fairylights.server.block.FastenerBlock;
+import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.connection.Connection;
 import me.sshcrack.fairylights.server.connection.ConnectionType;
 import me.sshcrack.fairylights.server.entity.FenceFastenerEntity;
 import me.sshcrack.fairylights.server.fastener.Fastener;
 import me.sshcrack.fairylights.server.sound.FLSounds;
 import me.sshcrack.fairylights.util.crafting.OtherTags;
+import me.sshcrack.fairylights.util.forge.capabilities.CapabilityHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -82,7 +85,7 @@ public abstract class ConnectionItem extends Item {
     }
 
     private boolean isConnectionInOtherHand(final World world, final PlayerEntity user, final ItemStack stack) {
-        final Fastener<?> attacher = user.getCapability(CapabilityHandler.FASTENER_CAP).orElseThrow(IllegalStateException::new);
+        final Fastener<?> attacher = ((CapabilityHelper<PlayerEntity>)user).getCapability(CapabilityHandler.FASTENER_CAP).orElseThrow(IllegalStateException::new);
         return attacher.getFirstConnection().filter(connection -> {
             final NbtCompound nbt = connection.serializeLogic();
             return nbt.isEmpty() ? stack.hasNbt() : !NbtHelper.matches(nbt, stack.getNbt(), true);
@@ -92,7 +95,7 @@ public abstract class ConnectionItem extends Item {
     private void connect(final ItemStack stack, final PlayerEntity user, final World world, final BlockPos pos) {
         final BlockEntity entity = world.getBlockEntity(pos);
         if (entity != null) {
-            entity.getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(fastener -> this.connect(stack, user, world, fastener));
+            ((CapabilityHelper<BlockEntity>)entity).getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(fastener -> this.connect(stack, user, world, fastener));
         }
     }
 
@@ -108,7 +111,7 @@ public abstract class ConnectionItem extends Item {
             );
             final BlockEntity entity = world.getBlockEntity(pos);
             if (entity != null) {
-                entity.getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(destination -> this.connect(stack, user, world, destination, false));
+                ((CapabilityHelper<BlockEntity>)entity).getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(destination -> this.connect(stack, user, world, destination, false));
             }
         }
     }
@@ -118,7 +121,7 @@ public abstract class ConnectionItem extends Item {
     }
 
     public void connect(final ItemStack stack, final PlayerEntity user, final World world, final Fastener<?> fastener, final boolean playConnectSound) {
-        user.getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(attacher -> {
+        ((CapabilityHelper<PlayerEntity>)user).getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(attacher -> {
             boolean playSound = playConnectSound;
             final Optional<Connection> placing = attacher.getFirstConnection();
             if (placing.isPresent()) {
