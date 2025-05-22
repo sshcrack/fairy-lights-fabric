@@ -5,6 +5,6 @@ import net.minecraft.item.Item;
 
 public final class GarlandConnectionItem extends ConnectionItem {
     public GarlandConnectionItem(final Item.Settings properties) {
-        super(properties, ConnectionTypes.VINE_GARLAND);
+        super(properties, ConnectionTypes.VINE_GARLAND.get());
     }
 }

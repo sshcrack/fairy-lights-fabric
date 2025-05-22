@@ -89,7 +89,7 @@ public final class FastenerBlockEntity extends BlockEntity implements Capability
 
 
 
-    private CapabilityProvider<BlockEntity> provider;
+    private final CapabilityProvider<BlockEntity> provider;
 
     @Override
     public @NotNull CapabilityProvider<BlockEntity> getProvider() {

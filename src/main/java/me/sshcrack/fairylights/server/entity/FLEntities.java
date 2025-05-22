@@ -7,13 +7,16 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public final class FLEntities {
     private FLEntities() {}
     public static <T extends Entity> Supplier<EntityType<T>> register(String name, Supplier<EntityType<T>> entity) {
         Identifier id = new Identifier(FairyLightsMod.ModID, name);
-        return () -> Registry.register(Registry.ENTITY_TYPE, id, entity.get());
+
+        EntityType<T> regEntity = Registry.register(Registry.ENTITY_TYPE, id, entity.get());
+        return () -> regEntity;
     }
 
     public static final Supplier<EntityType<FenceFastenerEntity>> FASTENER = register("fastener", () ->

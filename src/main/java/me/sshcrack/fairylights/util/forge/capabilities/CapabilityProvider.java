@@ -7,6 +7,7 @@
 package me.sshcrack.fairylights.util.forge.capabilities;
 
 import com.google.common.annotations.VisibleForTesting;
+import me.sshcrack.fairylights.FairyLightsMod;
 import me.sshcrack.fairylights.util.forge.events.EventFactory;
 import me.sshcrack.fairylights.util.forge.util.LazyOptional;
 import net.minecraft.nbt.NbtCompound;
@@ -141,8 +142,10 @@ public class CapabilityProvider<B> implements ICapabilityProviderImpl<B>
         }
 
         final CapabilityDispatcher disp = getCapabilities();
+        FairyLightsMod.LOGGER.info("Dispatcher is {}", disp);
         if (disp != null)
         {
+            FairyLightsMod.LOGGER.info("Deserializing nbt...");
             disp.deserializeNBT(tag);
         }
     }

@@ -10,7 +10,7 @@ import net.minecraft.util.collection.DefaultedList;
 
 public final class TinselConnectionItem extends ConnectionItem {
     public TinselConnectionItem(final Item.Settings properties) {
-        super(properties, ConnectionTypes.TINSEL_GARLAND);
+        super(properties, ConnectionTypes.TINSEL_GARLAND.get());
     }
 
     @Override

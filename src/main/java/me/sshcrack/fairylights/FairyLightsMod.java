@@ -4,8 +4,13 @@ import me.sshcrack.fairylights.client.ClientProxy;
 import me.sshcrack.fairylights.server.ServerProxy;
 import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.connection.ConnectionType;
+import me.sshcrack.fairylights.server.connection.ConnectionTypes;
 import me.sshcrack.fairylights.server.item.FLItems;
+import me.sshcrack.fairylights.server.item.crafting.FLCraftingRecipes;
+import me.sshcrack.fairylights.server.net_fabric.FairyLightsServerPlayHandler;
+import me.sshcrack.fairylights.server.sound.FLSounds;
 import me.sshcrack.fairylights.server.string.StringType;
+import me.sshcrack.fairylights.server.string.StringTypes;
 import me.sshcrack.fairylights.util.CalendarEvent;
 import me.sshcrack.fairylights.util.forge.events.EventBus;
 import me.sshcrack.fairylights.util.forge.fml.DistExecutor;
@@ -51,5 +56,10 @@ public class FairyLightsMod implements ModInitializer {
         CapabilityHandler.register();
         final ServerProxy proxy = DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
         proxy.init();
+        // Just to initialize recipes
+        FLCraftingRecipes.init();
+        StringTypes.init();
+        FLSounds.init();
+        ConnectionTypes.initialize();
     }
 }

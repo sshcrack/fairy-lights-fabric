@@ -7,6 +7,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public final class FLBlockEntities {
@@ -14,7 +15,9 @@ public final class FLBlockEntities {
 
     private static <T extends BlockEntity> Supplier<BlockEntityType<T>> register(String name, Supplier<BlockEntityType<T>> typeSupplier) {
         Identifier id = new Identifier(FairyLightsMod.ModID, name);
-        return () -> Registry.register(Registry.BLOCK_ENTITY_TYPE, id, typeSupplier.get());
+
+        BlockEntityType<T> regBlockEntity = Registry.register(Registry.BLOCK_ENTITY_TYPE, id, typeSupplier.get());
+        return () -> regBlockEntity;
     }
 
     public static final Supplier<BlockEntityType<FastenerBlockEntity>> FASTENER = register("fastener", () -> BlockEntityType.Builder.create(FastenerBlockEntity::new, FLBlocks.FASTENER.get()).build(null));

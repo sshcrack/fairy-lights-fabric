@@ -36,6 +36,6 @@ public class PacketList {
     );
 
     public static Identifier getId(Triplet<String, ?, ?> triplet) {
-        return new Identifier(FairyLightsMod.ModID, String.format("%s:%s", PacketList.CHANNEL_PREFIX, triplet.getA()));
+        return new Identifier(FairyLightsMod.ModID, String.format("%s_%s", PacketList.CHANNEL_PREFIX, triplet.getA()));
     }
 }

@@ -1,5 +1,6 @@
 package me.sshcrack.fairylights.mixin;
 
+import me.sshcrack.fairylights.FairyLightsMod;
 import me.sshcrack.fairylights.util.forge.capabilities.*;
 import me.sshcrack.fairylights.util.forge.util.LazyOptional;
 import net.minecraft.block.BlockState;
@@ -38,16 +39,24 @@ public class EntityMixin implements CapabilityHelper<Entity> {
             return;
 
         CapabilityDispatcher dispatcher = provider.getCapabilities();
+        FairyLightsMod.LOGGER.info("ReadNBT dispatcher is {} for {}", dispatcher, this);
         if(dispatcher != null) {
-            dispatcher.deserializeNBT(nbt.getCompound(CapabilityManager.NBT_IDENTIFIER));
+            NbtCompound capabilityNbt = nbt.getCompound(CapabilityManager.NBT_IDENTIFIER);
+            FairyLightsMod.LOGGER.info("NBTCompound is {}", capabilityNbt);
+
+            dispatcher.deserializeNBT(capabilityNbt);
         }
     }
 
     @Inject(method = "writeNbt", at = @At("RETURN"))
     public void writeNbt(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
         CapabilityDispatcher dispatcher = provider.getCapabilities();
-        if(dispatcher != null)
-            nbt.put(CapabilityManager.NBT_IDENTIFIER, dispatcher.serializeNBT());
+        if(dispatcher != null) {
+            NbtCompound data = dispatcher.serializeNBT();
+
+            FairyLightsMod.LOGGER.info("Saving NBT Data {} for {}", data, this);
+            nbt.put(CapabilityManager.NBT_IDENTIFIER, data);
+        }
     }
 
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {

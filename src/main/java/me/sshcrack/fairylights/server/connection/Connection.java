@@ -150,7 +150,7 @@ public abstract class Connection implements NBTSerializable {
     }
 
     public ItemStack getItemStack() {
-        final ItemStack stack = new ItemStack(this.getType().getItem());
+        final ItemStack stack = new ItemStack(this.getType().getItem().get());
         final NbtCompound tagCompound = this.serializeLogic();
         if (!tagCompound.isEmpty()) {
             stack.setNbt(tagCompound);
@@ -243,7 +243,7 @@ public abstract class Connection implements NBTSerializable {
             this.fastener.removeConnection(this);
             dest.removeConnection(this.uuid);
             if (this.shouldDrop()) {
-                //player.getInventory().insertStack(this.getItemStack());
+                player.getInventory().insertStack(this.getItemStack()); // was itemhelper
             }
             final NbtCompound data = heldStack.getNbt();
             final ConnectionType<? extends Connection> type = ((ConnectionItem) heldStack.getItem()).getConnectionType();

@@ -4,6 +4,7 @@ import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.server.entity.FenceFastenerEntity;
 import me.sshcrack.fairylights.server.fastener.accessor.EntityFastenerAccessor;
 import me.sshcrack.fairylights.util.forge.capabilities.Capability;
+import me.sshcrack.fairylights.util.forge.capabilities.CapabilityHelper;
 import me.sshcrack.fairylights.util.forge.util.LazyOptional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -40,20 +41,5 @@ public abstract class EntityFastener<E extends Entity> extends AbstractFastener<
     @Override
     public Vec3d getConnectionPoint() {
         return this.entity.getPos();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability) {
-        if(!capability.getName().equals(CapabilityHandler.FASTENER_CAP.getName()))
-            return LazyOptional.empty();
-
-        if (entity instanceof PlayerEntity) {
-            return (LazyOptional<T>) LazyOptional.of(() -> new PlayerFastener((PlayerEntity) entity));
-        } else if (entity instanceof FenceFastenerEntity) {
-            return (LazyOptional<T>) LazyOptional.of(() -> new FenceFastener((FenceFastenerEntity) entity));
-        }
-
-        return LazyOptional.empty();
     }
 }

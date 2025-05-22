@@ -29,7 +29,7 @@ public class BlockEntityMixin implements CapabilityHelper<BlockEntity> {
     }
 
     @Inject(method = "readNbt", at = @At(value = "HEAD"))
-    public void readNbt(NbtCompound nbt, CallbackInfo ci) {
+    public void readNbt(@NotNull NbtCompound nbt, CallbackInfo ci) {
         if (!nbt.contains(CapabilityManager.NBT_IDENTIFIER, NbtCompound.COMPOUND_TYPE))
             return;
 

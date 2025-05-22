@@ -23,7 +23,7 @@ import java.util.Objects;
 
 public final class HangingLightsConnectionItem extends ConnectionItem {
     public HangingLightsConnectionItem(final Item.Settings properties) {
-        super(properties, ConnectionTypes.HANGING_LIGHTS);
+        super(properties, ConnectionTypes.HANGING_LIGHTS.get());
     }
 
 

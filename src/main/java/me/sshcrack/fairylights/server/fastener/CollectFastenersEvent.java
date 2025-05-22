@@ -1,19 +1,19 @@
 package me.sshcrack.fairylights.server.fastener;
 
+import me.sshcrack.fairylights.FairyLightsMod;
 import me.sshcrack.fairylights.server.capability.CapabilityHandler;
 import me.sshcrack.fairylights.util.forge.capabilities.CapabilityHelper;
 import me.sshcrack.fairylights.util.forge.capabilities.ICapabilityProvider;
 import me.sshcrack.fairylights.util.forge.events.Event;
+import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class CollectFastenersEvent extends Event {
     private final World world;
@@ -36,12 +36,14 @@ public class CollectFastenersEvent extends Event {
         return this.region;
     }
 
+    @SuppressWarnings("unchecked")
     public void accept(final Chunk chunk) {
         try {
             Field field = Chunk.class.getDeclaredField("blockEntities");
             field.setAccessible(true);
 
-            Collection<BlockEntity> entities = (Collection<BlockEntity>) field.get(chunk);
+            Object entityObj = field.get(chunk);
+            Collection<BlockEntity> entities = ((Map<BlockPos, BlockEntity>) entityObj).values();
             for (final BlockEntity entity : entities) {
                 //TODO fix capability things here
                 this.accept(entity);

@@ -9,6 +9,10 @@ import java.util.function.Supplier;
 public final class StringTypes {
     private StringTypes() {}
 
+    public static void init() {
+        FairyLightsMod.LOGGER.info("Registering string types");
+    }
+
     private static StringType register(String name, Supplier<StringType> type) {
         Identifier id = new Identifier(FairyLightsMod.ModID, name);
 

@@ -16,7 +16,7 @@ import java.util.List;
 
 public class LetterBuntingConnectionItem extends ConnectionItem {
     public LetterBuntingConnectionItem(final Item.Settings properties) {
-        super(properties, ConnectionTypes.LETTER_BUNTING);
+        super(properties, ConnectionTypes.LETTER_BUNTING.get());
     }
 
     @Override

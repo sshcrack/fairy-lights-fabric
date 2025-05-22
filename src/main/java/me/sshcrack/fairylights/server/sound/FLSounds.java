@@ -8,6 +8,8 @@ import net.minecraft.util.registry.Registry;
 public final class FLSounds {
     private FLSounds() {}
 
+    public static void init() {}
+
     public static final SoundEvent CORD_STRETCH = create("cord.stretch");
 
     public static final SoundEvent CORD_CONNECT = create("cord.connect");

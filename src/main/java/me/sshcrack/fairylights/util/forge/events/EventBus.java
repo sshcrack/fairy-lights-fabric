@@ -37,7 +37,6 @@ public class EventBus {
         listeners.get(eventClass)
                 .forEach(e -> {
                     try {
-                        FairyLightsMod.LOGGER.info("Invoking method");
                         e.getMethod().invoke(e.getContext(), event);
                     } catch (IllegalAccessException | InvocationTargetException ex) {
                         String exception = Arrays.stream(ex.getStackTrace())

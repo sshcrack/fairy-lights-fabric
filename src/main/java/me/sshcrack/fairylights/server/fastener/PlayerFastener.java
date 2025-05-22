@@ -10,6 +10,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.HashMap;
+
 public final class PlayerFastener extends EntityFastener<PlayerEntity> {
     public PlayerFastener(final PlayerEntity entity) {
         super(entity);

@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "id": "fairylights",
   "version": "${version}",
-
   "name": "Fairy Lights",
   "description": "Fairy Lights fabric port",
   "authors": [
@@ -12,20 +11,23 @@
     "homepage": "https://sshcrack.me",
     "sources": "https://github.com/sshcrack/fairy-lights-fabric"
   },
-
   "license": "CC0-1.0",
   "icon": "assets/fairylights/logo.png",
-
   "environment": "*",
   "entrypoints": {
     "main": [
       "me.sshcrack.fairylights.FairyLightsMod"
+    ],
+    "client": [
+      "me.sshcrack.fairylights.FairyLightsModClient"
+    ],
+    "server": [
+      "me.sshcrack.fairylights.FairyLightsModServer"
     ]
   },
   "mixins": [
     "fairylights.mixins.json"
   ],
-
   "depends": {
     "fabricloader": ">=0.14.11",
     "fabric-api": "*",

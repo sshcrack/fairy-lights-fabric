@@ -40,10 +40,14 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public final class FLCraftingRecipes {
-    private FLCraftingRecipes() {
+    public FLCraftingRecipes() {
     }
 
-    public static <T extends CraftingRecipe> RecipeSerializer<T> register(String name, Supplier<RecipeSerializer<T>> serializerSupplier) {
+    public static void init() {
+        FairyLightsMod.LOGGER.info("Initializing crafting recipes");
+    }
+
+    private static <T extends CraftingRecipe> RecipeSerializer<T> register(String name, Supplier<RecipeSerializer<T>> serializerSupplier) {
         Identifier id = new Identifier(FairyLightsMod.ModID, name);
         return Registry.register(Registry.RECIPE_SERIALIZER, id, serializerSupplier.get());
     }

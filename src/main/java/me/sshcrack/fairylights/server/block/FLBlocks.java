@@ -9,6 +9,7 @@ import net.minecraft.block.Material;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -18,11 +19,9 @@ public final class FLBlocks {
 
     public static <T extends Block> Supplier<T> register(String name, Supplier<T> blockSupplier) {
         Identifier id = new Identifier(FairyLightsMod.ModID, name);
-        
-        return () -> {
-            FairyLightsMod.LOGGER.info("Registering block with id {}", id);
-            return Registry.register(Registry.BLOCK, id, blockSupplier.get());
-        };
+
+        T regBlock = Registry.register(Registry.BLOCK, id, blockSupplier.get());
+        return () -> regBlock;
     }
 
     public static final Supplier<FastenerBlock> FASTENER = register("fastener", () -> new FastenerBlock(AbstractBlock.Settings.of(Material.DECORATION)));

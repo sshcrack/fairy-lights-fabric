@@ -7,7 +7,9 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -17,10 +19,9 @@ public final class FLItems {
 
     public static <T extends Item> Supplier<T> register(String name, Supplier<T> item) {
         Identifier id = new Identifier(FairyLightsMod.ModID, name);
-        return () -> {
-            FairyLightsMod.LOGGER.info("Registering item{}", id);
-            return Registry.register(Registry.ITEM, id, item.get());
-        };
+
+        T registered = Registry.register(Registry.ITEM, id, item.get());
+        return () -> registered;
     }
 
     public static final Supplier<ConnectionItem> HANGING_LIGHTS = register("hanging_lights", () -> new HangingLightsConnectionItem(defaultProperties()));

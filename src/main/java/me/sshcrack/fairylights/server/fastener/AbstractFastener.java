@@ -252,7 +252,7 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
             final Connection connection = connectionEntry.getValue();
             final NbtCompound connectionCompound = new NbtCompound();
             connectionCompound.put("connection", connection.serialize());
-            connectionCompound.putString("type", FairyLightsMod.CONNECTION_TYPES.getId(connection.getType()).toString());
+            connectionCompound.putString("type", Objects.requireNonNull(FairyLightsMod.CONNECTION_TYPES.getId(connection.getType())).toString());
             connectionCompound.putUuid("uuid", uuid);
             outgoing.add(connectionCompound);
         }
